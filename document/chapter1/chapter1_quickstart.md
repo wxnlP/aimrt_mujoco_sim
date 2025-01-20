@@ -35,7 +35,7 @@ Aimrt_Mujoco_Sim 旨在为机器人开发者提供一个快速上手的仿真平
 进入到 build 目录下，执行以下命令运行：
 
 ```shell
-./start_sim.sh -sstart_examples_inverted_pendulum_with_pid_control.sh
+./start_examples_inverted_pendulum_with_pid_control.sh
 ```
 
 ## 1.3 项目结构
