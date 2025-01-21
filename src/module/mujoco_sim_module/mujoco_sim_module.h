@@ -41,8 +41,8 @@ class MujocoSimModule : public aimrt::ModuleBase {
   };
 
  public:
-  using SubscriberGenFunc = std::function<std::unique_ptr<SubscriberBase>()>;
-  using PublisherGenFunc = std::function<std::unique_ptr<PublisherBase>()>;
+  using SubscriberGenFunc = std::function<std::unique_ptr<subscriber::SubscriberBase>()>;
+  using PublisherGenFunc = std::function<std::unique_ptr<publisher::PublisherBase>()>;
 
  public:
   MujocoSimModule() = default;
@@ -85,8 +85,8 @@ class MujocoSimModule : public aimrt::ModuleBase {
   std::unordered_map<std::string, PublisherGenFunc> publisher_gen_func_map_;
 
   // key:topic
-  std::unordered_map<std::string, std::unique_ptr<SubscriberBase>> subscriber_map_;
-  std::unordered_map<std::string, std::unique_ptr<PublisherBase>> publisher_map_;
+  std::unordered_map<std::string, std::unique_ptr<subscriber::SubscriberBase>> subscriber_map_;
+  std::unordered_map<std::string, std::unique_ptr<publisher::PublisherBase>> publisher_map_;
 };
 
 }  // namespace aimrt_mujoco_sim::mujoco_sim_module

@@ -211,16 +211,16 @@ void MujocoSimModule::Shutdown() {
 void MujocoSimModule::RegisterSubscriberGenFunc() {
   subscriber_gen_func_map_.emplace(
       "joint_actuator",
-      []() -> std::unique_ptr<SubscriberBase> {
-        return std::make_unique<JointActuatorSubscriber>();
+      []() -> std::unique_ptr<subscriber::SubscriberBase> {
+        return std::make_unique<subscriber::JointActuatorSubscriber>();
       });
 }
 
 void MujocoSimModule::RegisterPublisherGenFunc() {
   publisher_gen_func_map_.emplace(
       "joint_sensor",
-      []() -> std::unique_ptr<PublisherBase> {
-        return std::make_unique<JointSensorPublisher>();
+      []() -> std::unique_ptr<publisher::PublisherBase> {
+        return std::make_unique<publisher::JointSensorPublisher>();
       });
 }
 
