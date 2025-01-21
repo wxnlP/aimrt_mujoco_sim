@@ -8,8 +8,8 @@
 
 namespace YAML {
 template <>
-struct convert<aimrt_mujoco_sim::mujoco_sim_module::JointSensorPublisher::Options> {
-  using Options = aimrt_mujoco_sim::mujoco_sim_module::JointSensorPublisher::Options;
+struct convert<aimrt_mujoco_sim::mujoco_sim_module::publisher ::JointSensorPublisher::Options> {
+  using Options = aimrt_mujoco_sim::mujoco_sim_module::publisher ::JointSensorPublisher::Options;
 
   static Node encode(const Options& rhs) {
     Node node;
@@ -44,7 +44,7 @@ struct convert<aimrt_mujoco_sim::mujoco_sim_module::JointSensorPublisher::Option
 };
 }  // namespace YAML
 
-namespace aimrt_mujoco_sim::mujoco_sim_module {
+namespace aimrt_mujoco_sim::mujoco_sim_module::publisher {
 
 void JointSensorPublisher::Initialize(YAML::Node options_node) {
   if (options_node && !options_node.IsNull())
@@ -150,4 +150,4 @@ void JointSensorPublisher::CheckFrequency() {
                           channel_frq_, kError);
 }
 
-}  // namespace aimrt_mujoco_sim::mujoco_sim_module
+}  // namespace aimrt_mujoco_sim::mujoco_sim_module::publisher
