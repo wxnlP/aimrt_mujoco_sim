@@ -54,7 +54,6 @@ class JointSensorPublisher : public PublisherBase {
 
  private:
   void RegisterSensorAddr();
-  void CheckFrequency();
 
  private:
   struct SensorAddrGroup {
