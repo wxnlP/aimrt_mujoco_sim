@@ -85,6 +85,7 @@ void JointSensorPublisher::PublishSensorData() {
       auto* data = state.add_data();
       data->set_name(name_vec_[i]);
       data->set_position(state_array[i].jointpos_state);
+
       data->set_velocity(state_array[i].jointvel_state);
     }
 
