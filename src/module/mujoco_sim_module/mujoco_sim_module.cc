@@ -209,8 +209,8 @@ void MujocoSimModule::Shutdown() {
 }
 
 void MujocoSimModule::RegisterSubscriberGenFunc() {
-  auto generator = [this]<typename T>(const char* name) {
-    subscriber_gen_func_map_.try_emplace(
+  auto generator = [this]<typename T>(std::string_view name) {
+    subscriber_gen_func_map_.emplace(
         name,
         []() -> std::unique_ptr<subscriber::SubscriberBase> {
           return std::make_unique<T>();
@@ -221,8 +221,8 @@ void MujocoSimModule::RegisterSubscriberGenFunc() {
 }
 
 void MujocoSimModule::RegisterPublisherGenFunc() {
-  auto generator = [this]<typename T>(const char* name) {
-    publisher_gen_func_map_.try_emplace(
+  auto generator = [this]<typename T>(std::string_view name) {
+    publisher_gen_func_map_.emplace(
         name,
         []() -> std::unique_ptr<publisher::PublisherBase> {
           return std::make_unique<T>();

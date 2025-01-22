@@ -50,7 +50,7 @@ void JointSensorPublisher::Initialize(YAML::Node options_node) {
   if (options_node && !options_node.IsNull())
     options_ = options_node.as<Options>();
 
-  CheckFrequency(channel_frq_, avg_interval_base_);
+  avg_interval_base_ = GetAvgIntervalBase(channel_frq_);
   RegisterSensorAddr();
 
   options_node = options_;

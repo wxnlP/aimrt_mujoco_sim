@@ -6,41 +6,36 @@
 
 namespace aimrt_mujoco_sim::mujoco_sim_module::publisher {
 
-TEST(CheckFrequencyTest, BoundaryValidation) {
-  double avg_interval = 0.0;
-
-  EXPECT_ANY_THROW(CheckFrequency(0, avg_interval));
-  EXPECT_ANY_THROW(CheckFrequency(1001, avg_interval));
+TEST(GetAvgIntervalBaseTest, BoundaryValidation) {
+  EXPECT_ANY_THROW(GetAvgIntervalBase(0));
+  EXPECT_ANY_THROW(GetAvgIntervalBase(1001));
 }
 
-TEST(CheckFrequencyTest, ExactFrequency) {
+TEST(GetAvgIntervalBaseTest, ExactFrequency) {
   const std::vector<std::pair<uint32_t, double>> cases = {
-      {1, 1000.0}, {100, 10.0}, {500, 2.0}, {1000, 1.0}};
+      {1, 1000.0},
+      {10, 100.0},
+      {1000, 1.0}};
 
   for (const auto& [freq, expected] : cases) {
-    double avg_interval = 0.0;
-    EXPECT_NO_THROW(CheckFrequency(freq, avg_interval));
-    EXPECT_DOUBLE_EQ(avg_interval, expected);
+    EXPECT_DOUBLE_EQ(GetAvgIntervalBase(freq), expected);
   }
 }
 
-TEST(CheckFrequencyTest, ApproximateFrequency) {
-  // valid cases
+TEST(GetAvgIntervalBaseTest, ApproximateFrequency) {
+  // valid_cases
   {
-    const std::vector<uint32_t> valid_cases = {10, 48};
+    const std::vector<uint32_t> valid_cases = {48, 100};
     for (auto freq : valid_cases) {
-      double avg_interval = 0.0;
-      EXPECT_NO_THROW(CheckFrequency(freq, avg_interval));
-      EXPECT_NEAR(avg_interval, 1000.0 / freq, 1e-9);
+      EXPECT_NO_THROW(GetAvgIntervalBase(freq));
     }
   }
 
-  // invalid cases
+  // invalid_cases
   {
     const std::vector<uint32_t> invalid_cases = {999};
     for (auto freq : invalid_cases) {
-      double avg_interval = 0.0;
-      EXPECT_ANY_THROW(CheckFrequency(freq, avg_interval));
+      EXPECT_ANY_THROW(GetAvgIntervalBase(freq));
     }
   }
 }
