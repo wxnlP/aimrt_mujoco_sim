@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+import "header.proto";
+
+package aimrt.protocols.sensor;
+
+message Vector3 {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+}
+
+message Quaternion {
+  double w = 1;
+  double x = 2;
+  double y = 3;
+  double z = 4;
+}
+
+message SingleImuData {
+  string name = 1;
+  Quaternion orientation = 2;
+  Vector3 angular_velocity = 3;
+  Vector3 linear_acceleration = 4;
+}
+
+message ImuState {
+  aimrt.protocols.common.Header header = 1;
+  repeated SingleImuData data = 2;
+}

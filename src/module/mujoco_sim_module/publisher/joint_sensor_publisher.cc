@@ -102,26 +102,9 @@ void JointSensorPublisher::PublishSensorData() {
 
 void JointSensorPublisher::RegisterSensorAddr() {
   for (const auto& joint : options_.joints) {
-    const uint32_t pos_idx = !joint.bind_jointpos_sensor.empty()
-                                 ? mj_name2id(m_, mjOBJ_SENSOR, joint.bind_jointpos_sensor.c_str())
-                                 : -1;
-
-    const uint32_t vel_idx = !joint.bind_jointvel_sensor.empty()
-                                 ? mj_name2id(m_, mjOBJ_SENSOR, joint.bind_jointvel_sensor.c_str())
-                                 : -1;
-
-    if (!joint.bind_jointpos_sensor.empty() && pos_idx < 0) {
-      AIMRT_CHECK_ERROR_THROW(false, "Invalid position sensor name '{}'.",
-                              joint.bind_jointpos_sensor);
-    }
-    if (!joint.bind_jointvel_sensor.empty() && vel_idx < 0) {
-      AIMRT_CHECK_ERROR_THROW(false, "Invalid velocity sensor name '{}'.",
-                              joint.bind_jointvel_sensor);
-    }
-
     sensor_addr_vec_.emplace_back(SensorAddrGroup{
-        .jointpos_addr = pos_idx,
-        .jointvel_addr = vel_idx});
+        .jointpos_addr = GetSensorAddr(m_, joint.bind_jointpos_sensor),
+        .jointvel_addr = GetSensorAddr(m_, joint.bind_jointvel_sensor)});
 
     name_vec_.emplace_back(joint.name);
   }
