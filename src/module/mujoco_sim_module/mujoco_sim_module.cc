@@ -209,19 +209,27 @@ void MujocoSimModule::Shutdown() {
 }
 
 void MujocoSimModule::RegisterSubscriberGenFunc() {
-  subscriber_gen_func_map_.emplace(
-      "joint_actuator",
-      []() -> std::unique_ptr<SubscriberBase> {
-        return std::make_unique<JointActuatorSubscriber>();
-      });
+  auto generator = [this]<typename T>(std::string_view name) {
+    subscriber_gen_func_map_.emplace(
+        name,
+        []() -> std::unique_ptr<subscriber::SubscriberBase> {
+          return std::make_unique<T>();
+        });
+  };
+
+  generator.template operator()<subscriber::JointActuatorSubscriber>("joint_actuator");
 }
 
 void MujocoSimModule::RegisterPublisherGenFunc() {
-  publisher_gen_func_map_.emplace(
-      "joint_sensor",
-      []() -> std::unique_ptr<PublisherBase> {
-        return std::make_unique<JointSensorPublisher>();
-      });
+  auto generator = [this]<typename T>(std::string_view name) {
+    publisher_gen_func_map_.emplace(
+        name,
+        []() -> std::unique_ptr<publisher::PublisherBase> {
+          return std::make_unique<T>();
+        });
+  };
+
+  generator.template operator()<publisher::JointSensorPublisher>("joint_sensor");
 }
 
 aimrt::co::Task<void> MujocoSimModule::GuiLoop() {
