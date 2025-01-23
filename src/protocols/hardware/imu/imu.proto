@@ -4,27 +4,31 @@ import "header.proto";
 
 package aimrt.protocols.sensor;
 
+message Quaternion {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+  double w = 4;
+}
+
 message Vector3 {
   double x = 1;
   double y = 2;
   double z = 3;
 }
 
-message Quaternion {
-  double w = 1;
-  double x = 2;
-  double y = 3;
-  double z = 4;
-}
-
 message SingleImuData {
-  string name = 1;
-  Quaternion orientation = 2;
+  Quaternion orientation = 1;
+  repeated double orientation_covariance = 2;
+
   Vector3 angular_velocity = 3;
-  Vector3 linear_acceleration = 4;
+  repeated double angular_velocity_covariance = 4;
+
+  Vector3 linear_acceleration = 5;
+  repeated double linear_acceleration_covariance = 6;
 }
 
 message ImuState {
   aimrt.protocols.common.Header header = 1;
-  repeated SingleImuData data = 2;
+  SingleImuData data = 2;
 }
