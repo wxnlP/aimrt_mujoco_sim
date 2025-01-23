@@ -14,14 +14,10 @@ namespace aimrt_mujoco_sim::mujoco_sim_module::publisher {
 class ImuSensorPublisher : public PublisherBase {
  public:
   struct Options {
-    struct Imu {
-      std::string name;
-      std::string bind_site;
-      std::string bind_framequat;
-      std::string bind_gyro;
-      std::string bind_accelerometer;
-    };
-    std::vector<Imu> imus;
+    std::string bind_site;
+    std::string bind_framequat;
+    std::string bind_gyro;
+    std::string bind_accelerometer;
   };
 
  public:
@@ -65,7 +61,7 @@ class ImuSensorPublisher : public PublisherBase {
 
   struct SensorStateGroup {
     struct {
-      double w, x, y, z;
+      double x, y, z, w;
     } orientation;
     struct {
       double x, y, z;
@@ -88,8 +84,7 @@ class ImuSensorPublisher : public PublisherBase {
   double avg_interval_ = 0;
 
   size_t imu_num_ = 0;
-  std::vector<SensorAddrGroup> sensor_addr_vec_;
-  std::vector<std::string> name_vec_;
+  SensorAddrGroup sensor_addr_group_;
 
   uint32_t counter_ = 0;
 };
