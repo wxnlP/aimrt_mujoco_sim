@@ -65,15 +65,9 @@ void ImuSensorPublisher::PublishSensorData() {
 
   auto state_array = std::make_unique<SensorStateGroup>();
 
-  auto copy_sensor_data = [this](int addr, auto& dest, size_t n) {
-    if (addr >= 0) {
-      std::memcpy(&dest, &d_->sensordata[addr], n * sizeof(float));
-    }
-  };
-
-  copy_sensor_data(sensor_addr_group_.framequat_addr, state_array->orientation, 4);
-  copy_sensor_data(sensor_addr_group_.gyro_addr, state_array->angular_velocity, 3);
-  copy_sensor_data(sensor_addr_group_.accelerometer_addr, state_array->linear_acceleration, 3);
+  CopySensorData(sensor_addr_group_.framequat_addr, state_array->orientation, 4);
+  CopySensorData(sensor_addr_group_.gyro_addr, state_array->angular_velocity, 3);
+  CopySensorData(sensor_addr_group_.accelerometer_addr, state_array->linear_acceleration, 3);
 
   executor_.Execute([this, state_array = std::move(state_array)]() {
     aimrt::protocols::sensor::ImuState state;
@@ -112,5 +106,11 @@ void ImuSensorPublisher::RegisterSensorAddr() {
   sensor_addr_group_.gyro_addr = GetSensorAddr(m_, options_.bind_gyro),
   sensor_addr_group_.accelerometer_addr = GetSensorAddr(m_, options_.bind_accelerometer);
 }
+
+void ImuSensorPublisher::CopySensorData(int addr, auto& dest, size_t n) {
+  if (addr >= 0) {
+    std::memcpy(&dest, &d_->sensordata[addr], n * sizeof(float));
+  }
+};
 
 }  // namespace aimrt_mujoco_sim::mujoco_sim_module::publisher

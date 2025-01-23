@@ -71,6 +71,8 @@ class ImuSensorPublisher : public PublisherBase {
     } linear_acceleration;
   };
 
+  void CopySensorData(int addr, auto& dest, size_t n);
+
  private:
   Options options_;
 
