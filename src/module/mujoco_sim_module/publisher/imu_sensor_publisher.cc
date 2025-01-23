@@ -27,9 +27,16 @@ struct convert<aimrt_mujoco_sim::mujoco_sim_module::publisher::ImuSensorPublishe
     if (!node.IsMap()) return false;
 
     rhs.bind_site = node["bind_site"].as<std::string>();
-    rhs.bind_framequat = node["bind_framequat"].as<std::string>();
-    rhs.bind_gyro = node["bind_gyro"].as<std::string>();
-    rhs.bind_accelerometer = node["bind_accelerometer"].as<std::string>();
+
+    if (node["bind_framequat"]) {
+      rhs.bind_framequat = node["bind_framequat"].as<std::string>();
+    }
+    if (node["bind_gyro"]) {
+      rhs.bind_gyro = node["bind_gyro"].as<std::string>();
+    }
+    if (node["bind_accelerometer"]) {
+      rhs.bind_accelerometer = node["bind_accelerometer"].as<std::string>();
+    }
 
     return true;
   }

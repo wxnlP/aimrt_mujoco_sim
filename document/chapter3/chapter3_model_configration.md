@@ -34,7 +34,7 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
 | publisher_options[i].topic     | string | 必选     | ""     | 发布者选项，用于发布状态信息                                    |
 | publisher_options[i].frequency | number | 必选     | 1000   | 发布状态信息的频率(Hz) ，最大值为1000                           |
 | publisher_options[i].executor  | string | 必选     | ""     | 发布者所绑定的执行器类型                                        |
-| publisher_options[i].type      | string | 必选     | ""     | 发布的状态信息类型,目前可选的有                                 |
+| publisher_options[i].type      | string | 必选     | ""     | 发布的状态信息类型                                              |
 | publisher_options[i].options   | map    | 可选     | -      | 发布状态信息的配置项  ，具体请参考[传感器配置](#323-传感器配置) |
 
 使用注意点如下：
@@ -55,8 +55,8 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
 | ------------------ | ------ | -------- | ------ | --------------------------------------- |
 | name               | string | 必选     | ""     | 该关节的名称                            |
 | bind_joint         | string | 必选     | ""     | 该关节在 xml 中绑定的关节名称           |
-| bind_actuator_type | string | 必选     | ""     | 该关节驱动器 在xml 中绑定的驱动器的类型 |
-| bind_actuator_name | string | 必选     | ""     | 该关节驱动器在  xml中绑定的驱动器的名称 |
+| bind_actuator_type | string | 可选     | ""     | 该关节驱动器 在xml 中绑定的驱动器的类型 |
+| bind_actuator_name | string | 可选     | ""     | 该关节驱动器在  xml中绑定的驱动器的名称 |
 
 使用注意点如下：
 - joints 下的每一个元素会通过一个订阅者进行订阅
@@ -89,8 +89,8 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
 | -------------------- | ------ | -------- | ------ | ----------------------------------- |
 | name                 | string | 必选     | ""     | 该关节驱动器的名称                  |
 | bind_joint           | string | 必选     | ""     | 该关节驱动器在 xml 中绑定的关节名称 |
-| bind_jointpos_sensor | string | 必选     | ""     | 该关节在 xml 中绑定的位置传感器名称 |
-| bind_jointvel_sensor | string | 必选     | ""     | 该关节在 xml 中绑定的速度传感器名称 |
+| bind_jointpos_sensor | string | 可选     | ""     | 该关节在 xml 中绑定的位置传感器名称 |
+| bind_jointvel_sensor | string | 可选     | ""     | 该关节在 xml 中绑定的速度传感器名称 |
 
 使用注意点如下：
 - joints 下的每一个元素会通过一个发布者进行发布
@@ -124,9 +124,9 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
 | 节点               | 类型   | 是否可选 | 默认值 | 作用                                    |
 | ------------------ | ------ | -------- | ------ | --------------------------------------- |
 | bind_site          | string | 必选     | ""     | IMU 传感器在 xml 中绑定的 site 名称     |
-| bind_framequat     | string | 必选     | ""     | 绑定在 xml 中测量姿态四元数的传感器名称 |
-| bind_gyro          | string | 必选     | ""     | 绑定在 xml 中测量角速度的传感器名称     |
-| bind_accelerometer | string | 必选     | ""     | 绑定在 xml 中测量线加速度的传感器名称   |
+| bind_framequat     | string | 可选     | ""     | 绑定在 xml 中测量姿态四元数的传感器名称 |
+| bind_gyro          | string | 可选     | ""     | 绑定在 xml 中测量角速度的传感器名称     |
+| bind_accelerometer | string | 可选     | ""     | 绑定在 xml 中测量线加速度的传感器名称   |
 
 使用注意点如下：
 - 每个 publisher 最多只能发布一个 imu 传感器信息

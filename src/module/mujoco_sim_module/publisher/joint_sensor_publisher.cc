@@ -33,8 +33,12 @@ struct convert<aimrt_mujoco_sim::mujoco_sim_module::publisher ::JointSensorPubli
         auto joint_node_options = Options::Joint{
             .name = joint_node["name"].as<std::string>(),
             .bind_joint = joint_node["bind_joint"].as<std::string>(),
-            .bind_jointpos_sensor = joint_node["bind_jointpos_sensor"].as<std::string>(),
-            .bind_jointvel_sensor = joint_node["bind_jointvel_sensor"].as<std::string>()};
+            .bind_jointpos_sensor = joint_node["bind_jointpos_sensor"].IsDefined()
+                                        ? joint_node["bind_jointpos_sensor"].as<std::string>()
+                                        : "",
+            .bind_jointvel_sensor = joint_node["bind_jointvel_sensor"].IsDefined()
+                                        ? joint_node["bind_jointvel_sensor"].as<std::string>()
+                                        : ""};
 
         rhs.joints.emplace_back(std::move(joint_node_options));
       }
