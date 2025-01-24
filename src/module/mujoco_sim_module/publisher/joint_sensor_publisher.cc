@@ -33,8 +33,12 @@ struct convert<aimrt_mujoco_sim::mujoco_sim_module::publisher ::JointSensorPubli
         auto joint_node_options = Options::Joint{
             .name = joint_node["name"].as<std::string>(),
             .bind_joint = joint_node["bind_joint"].as<std::string>(),
-            .bind_jointpos_sensor = joint_node["bind_jointpos_sensor"].as<std::string>(),
-            .bind_jointvel_sensor = joint_node["bind_jointvel_sensor"].as<std::string>()};
+            .bind_jointpos_sensor = joint_node["bind_jointpos_sensor"].IsDefined()
+                                        ? joint_node["bind_jointpos_sensor"].as<std::string>()
+                                        : "",
+            .bind_jointvel_sensor = joint_node["bind_jointvel_sensor"].IsDefined()
+                                        ? joint_node["bind_jointvel_sensor"].as<std::string>()
+                                        : ""};
 
         rhs.joints.emplace_back(std::move(joint_node_options));
       }
@@ -102,26 +106,9 @@ void JointSensorPublisher::PublishSensorData() {
 
 void JointSensorPublisher::RegisterSensorAddr() {
   for (const auto& joint : options_.joints) {
-    const uint32_t pos_idx = !joint.bind_jointpos_sensor.empty()
-                                 ? mj_name2id(m_, mjOBJ_SENSOR, joint.bind_jointpos_sensor.c_str())
-                                 : -1;
-
-    const uint32_t vel_idx = !joint.bind_jointvel_sensor.empty()
-                                 ? mj_name2id(m_, mjOBJ_SENSOR, joint.bind_jointvel_sensor.c_str())
-                                 : -1;
-
-    if (!joint.bind_jointpos_sensor.empty() && pos_idx < 0) {
-      AIMRT_CHECK_ERROR_THROW(false, "Invalid position sensor name '{}'.",
-                              joint.bind_jointpos_sensor);
-    }
-    if (!joint.bind_jointvel_sensor.empty() && vel_idx < 0) {
-      AIMRT_CHECK_ERROR_THROW(false, "Invalid velocity sensor name '{}'.",
-                              joint.bind_jointvel_sensor);
-    }
-
     sensor_addr_vec_.emplace_back(SensorAddrGroup{
-        .jointpos_addr = pos_idx,
-        .jointvel_addr = vel_idx});
+        .jointpos_addr = GetSensorAddr(m_, joint.bind_jointpos_sensor),
+        .jointvel_addr = GetSensorAddr(m_, joint.bind_jointvel_sensor)});
 
     name_vec_.emplace_back(joint.name);
   }
