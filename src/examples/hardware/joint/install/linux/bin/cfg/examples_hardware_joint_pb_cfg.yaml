@@ -36,10 +36,6 @@ aimrt:
     backends:
       - type: local
       - type: http
-        options:
-          pub_topics_options:
-            - topic_name: "(.*)"
-              server_url_list: ["127.0.0.1:50081"]
     sub_topics_options:
       - topic_name: "(.*)"
         enable_backends: [http, local]
