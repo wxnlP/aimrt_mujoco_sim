@@ -27,7 +27,6 @@ target_link_libraries(
   ${CUR_TARGET_NAME}
   PRIVATE aimrt::interface::aimrt_type_support_pkg_c_interface
           aimrt::interface::aimrt_module_protobuf_interface
-          aimrt_mujoco_sim::protocols::joint_pb_gencode
-)
+          aimrt_mujoco_sim::protocols::joint_pb_gencode)
 # Set misc of target
 set_target_properties(${CUR_TARGET_NAME} PROPERTIES OUTPUT_NAME ${CUR_DIR})
