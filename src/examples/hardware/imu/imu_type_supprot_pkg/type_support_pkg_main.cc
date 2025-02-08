@@ -4,11 +4,14 @@
 #include "aimrt_type_support_pkg_c_interface/type_support_pkg_main.h"
 
 #include "aimrt_module_protobuf_interface/util/protobuf_type_support.h"
+#include "aimrt_module_ros2_interface/util/ros2_type_support.h"
 
+#include <sensor_msgs/msg/imu.hpp>
 #include "imu.pb.h"
 
 static const aimrt_type_support_base_t* type_support_array[]{
     aimrt::GetProtobufMessageTypeSupport<aimrt::protocols::sensor::ImuState>(),
+    aimrt::GetRos2MessageTypeSupport<sensor_msgs::msg::Imu>(),
 };
 
 extern "C" {
