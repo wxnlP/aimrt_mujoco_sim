@@ -19,10 +19,7 @@ file(GLOB_RECURSE src ${CMAKE_CURRENT_SOURCE_DIR}/*.cc)
 if(AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
   find_package(rclcpp REQUIRED)
   find_package(sensor_msgs REQUIRED)
-  set(ADDITIONAL_DEPS
-        aimrt::interface::aimrt_module_ros2_interface
-        sensor_msgs::sensor_msgs__rosidl_generator_cpp
-    )
+  set(ADDITIONAL_DEPS aimrt::interface::aimrt_module_ros2_interface sensor_msgs::sensor_msgs__rosidl_generator_cpp)
 else()
   set(ADDITIONAL_DEPS "")
 endif()
@@ -41,6 +38,6 @@ target_link_libraries(
           aimrt::interface::aimrt_module_protobuf_interface
           aimrt_mujoco_sim::protocols::imu_pb_gencode
           ${ADDITIONAL_DEPS})
-          
+
 # Set misc of target
 set_target_properties(${CUR_TARGET_NAME} PROPERTIES OUTPUT_NAME ${CUR_DIR})

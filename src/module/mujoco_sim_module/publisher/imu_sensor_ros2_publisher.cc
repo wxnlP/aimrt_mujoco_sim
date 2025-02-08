@@ -1,8 +1,8 @@
 // Copyright (c) 2023, AgiBot Inc.
 // All rights reserved.
+#include "mujoco_sim_module/publisher/imu_sensor_ros2_publisher.h"
 #include "aimrt_module_ros2_interface/channel/ros2_channel.h"
 #include "mujoco_sim_module/global.h"
-#include "mujoco_sim_module/publisher/imu_sensor_ros2_publisher.h"
 #include "mujoco_sim_module/publisher/utils.h"
 namespace YAML {
 template <>

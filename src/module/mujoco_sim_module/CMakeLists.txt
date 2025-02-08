@@ -19,15 +19,11 @@ file(GLOB_RECURSE test_files ${CMAKE_CURRENT_SOURCE_DIR}/*_test.cc)
 file(GLOB_RECURSE with_ros2_files ${CMAKE_CURRENT_SOURCE_DIR}/*ros2*.cc ${CMAKE_CURRENT_SOURCE_DIR}/*ros2*.h)
 list(REMOVE_ITEM src ${test_files})
 
-
 # deal with ROS2 related files and dependencies
 if(AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
   find_package(rclcpp REQUIRED)
   find_package(sensor_msgs REQUIRED)
-  set(ADDITIONAL_DEPS
-        aimrt::interface::aimrt_module_ros2_interface
-        sensor_msgs::sensor_msgs__rosidl_generator_cpp
-    )
+  set(ADDITIONAL_DEPS aimrt::interface::aimrt_module_ros2_interface sensor_msgs::sensor_msgs__rosidl_generator_cpp)
 else()
   # remove ROS2 related files and dependencies
   list(REMOVE_ITEM src ${with_ros2_files})
