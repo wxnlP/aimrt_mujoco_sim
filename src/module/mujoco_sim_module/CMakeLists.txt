@@ -23,12 +23,15 @@ list(REMOVE_ITEM src ${test_files})
 if(AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
   find_package(rclcpp REQUIRED)
   find_package(sensor_msgs REQUIRED)
-  set(ADDITIONAL_DEPS aimrt::interface::aimrt_module_ros2_interface sensor_msgs::sensor_msgs__rosidl_generator_cpp)
+  set(ADDITIONAL_DEPS aimrt::interface::aimrt_module_ros2_interface #
+                      sensor_msgs::sensor_msgs__rosidl_generator_cpp)
 else()
+
   # remove ROS2 related files and dependencies
   list(REMOVE_ITEM src ${with_ros2_files})
   list(REMOVE_ITEM head_files ${with_ros2_files})
   set(ADDITIONAL_DEPS "")
+  message("=====> ${src} ${head_files}")
 endif()
 
 # Add target

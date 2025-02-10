@@ -9,11 +9,14 @@
 #include "aimrt_module_cpp_interface/co/sync_wait.h"
 #include "mujoco_sim_module/global.h"
 #include "mujoco_sim_module/publisher/imu_sensor_publisher.h"
-#include "mujoco_sim_module/publisher/imu_sensor_ros2_publisher.h"
 #include "mujoco_sim_module/publisher/joint_sensor_publisher.h"
 #include "mujoco_sim_module/subscriber/joint_actuator_subscriber.h"
 
 #include "yaml-cpp/yaml.h"
+
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
+  #include "mujoco_sim_module/publisher/imu_sensor_ros2_publisher.h"
+#endif
 
 namespace YAML {
 template <>
@@ -233,7 +236,10 @@ void MujocoSimModule::RegisterPublisherGenFunc() {
 
   generator.template operator()<publisher::JointSensorPublisher>("joint_sensor");
   generator.template operator()<publisher::ImuSensorPublisher>("imu_sensor");
+
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
   generator.template operator()<publisher::ImuSensorRos2Publisher>("imu_sensor_ros2");
+#endif
 }
 
 aimrt::co::Task<void> MujocoSimModule::GuiLoop() {
