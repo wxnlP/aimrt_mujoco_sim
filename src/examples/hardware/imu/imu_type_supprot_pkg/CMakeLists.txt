@@ -15,35 +15,34 @@ set(CUR_TARGET_ALIAS_NAME ${CUR_SUPERIOR_NAMESPACE}::${CUR_DIR})
 # Set file collection
 file(GLOB_RECURSE src ${CMAKE_CURRENT_SOURCE_DIR}/*.cc)
 
-# deal with ROS2 related files and dependencies
-if(AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
-  find_package(rclcpp REQUIRED)
-  find_package(sensor_msgs REQUIRED)
-  set(ADDITIONAL_DEPS aimrt::interface::aimrt_module_ros2_interface #
-                      sensor_msgs::sensor_msgs__rosidl_generator_cpp #
-                      sensor_msgs::sensor_msgs__rosidl_typesupport_cpp)
-else()
-  set(ADDITIONAL_DEPS "")
-endif()
-
 # Add target
 add_library(${CUR_TARGET_NAME} SHARED)
 add_library(${CUR_TARGET_ALIAS_NAME} ALIAS ${CUR_TARGET_NAME})
-
-if(AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
-  target_compile_definitions(${CUR_TARGET_NAME} PRIVATE AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
-endif()
 
 # Set source file of target
 target_sources(${CUR_TARGET_NAME} PRIVATE ${src})
 
 # Set link libraries of target
-target_link_libraries(
-  ${CUR_TARGET_NAME}
-  PRIVATE aimrt::interface::aimrt_type_support_pkg_c_interface
-          aimrt::interface::aimrt_module_protobuf_interface
-          aimrt_mujoco_sim::protocols::imu_pb_gencode
-          ${ADDITIONAL_DEPS})
+set(BASE_DEPENDENCIES
+    aimrt::interface::aimrt_type_support_pkg_c_interface #
+    aimrt::interface::aimrt_module_protobuf_interface #
+    aimrt_mujoco_sim::protocols::imu_pb_gencode)
+
+if(AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
+  find_package(rclcpp REQUIRED)
+  find_package(sensor_msgs REQUIRED)
+
+  target_compile_definitions(${CUR_TARGET_NAME} PRIVATE AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
+
+  target_link_libraries(
+    ${CUR_TARGET_NAME}
+    PRIVATE ${BASE_DEPENDENCIES} #
+            aimrt::interface::aimrt_module_ros2_interface #
+            sensor_msgs::sensor_msgs__rosidl_generator_cpp #
+            sensor_msgs::sensor_msgs__rosidl_typesupport_cpp)
+else()
+  target_link_libraries(${CUR_TARGET_NAME} PRIVATE ${BASE_DEPENDENCIES})
+endif()
 
 # Set misc of target
 set_target_properties(${CUR_TARGET_NAME} PROPERTIES OUTPUT_NAME ${CUR_DIR})
