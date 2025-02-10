@@ -24,7 +24,8 @@ if(AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
   find_package(rclcpp REQUIRED)
   find_package(sensor_msgs REQUIRED)
   set(ADDITIONAL_DEPS aimrt::interface::aimrt_module_ros2_interface #
-                      sensor_msgs::sensor_msgs__rosidl_generator_cpp)
+                      sensor_msgs::sensor_msgs__rosidl_generator_cpp #
+                      sensor_msgs::sensor_msgs__rosidl_typesupport_cpp)
 else()
 
   # remove ROS2 related files and dependencies
@@ -36,6 +37,11 @@ endif()
 # Add target
 add_library(${CUR_TARGET_NAME} STATIC)
 add_library(${CUR_TARGET_ALIAS_NAME} ALIAS ${CUR_TARGET_NAME})
+
+if(AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
+  target_compile_definitions(${CUR_TARGET_NAME} PRIVATE AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
+endif()
+
 
 # Set source file of target
 target_sources(${CUR_TARGET_NAME} PRIVATE ${src})
