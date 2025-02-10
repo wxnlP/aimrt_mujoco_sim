@@ -31,7 +31,6 @@ else()
   list(REMOVE_ITEM src ${with_ros2_files})
   list(REMOVE_ITEM head_files ${with_ros2_files})
   set(ADDITIONAL_DEPS "")
-  message("=====> ${src} ${head_files}")
 endif()
 
 # Add target
