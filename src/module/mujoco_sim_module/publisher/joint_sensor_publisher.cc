@@ -67,14 +67,8 @@ void JointSensorPublisher::Initialize(YAML::Node options_node) {
   AIMRT_CHECK_ERROR_THROW(ret, "Register publish type failed.");
 }
 
-void JointSensorPublisher::Start() {
-}
-
-void JointSensorPublisher::Shutdown() {
-}
-
 void JointSensorPublisher::PublishSensorData() {
-  static constexpr uint32_t ONE_MB = 1024 * 1024;  // 1 Mb
+  static constexpr uint32_t ONE_MB = 1024 * 1024;
 
   if (counter_++ < avg_interval_) return;
 

@@ -2,10 +2,6 @@
 // All rights reserved.
 
 #include "mujoco_sim_module/publisher/imu_sensor_publisher.h"
-#include "aimrt_module_protobuf_interface/channel/protobuf_channel.h"
-#include "aimrt_module_protobuf_interface/util/protobuf_tools.h"
-#include "mujoco_sim_module/global.h"
-#include "mujoco_sim_module/publisher/utils.h"
 
 namespace YAML {
 template <>
@@ -50,6 +46,7 @@ void ImuSensorPublisher::Initialize(YAML::Node options_node) {
     options_ = options_node.as<Options>();
 
   avg_interval_base_ = GetAvgIntervalBase(channel_frq_);
+
   RegisterSensorAddr();
 
   options_node = options_;
@@ -57,12 +54,6 @@ void ImuSensorPublisher::Initialize(YAML::Node options_node) {
   bool ret = aimrt::channel::RegisterPublishType<aimrt::protocols::sensor::ImuState>(publisher_);
 
   AIMRT_CHECK_ERROR_THROW(ret, "Register publish type failed.");
-}
-
-void ImuSensorPublisher::Start() {
-}
-
-void ImuSensorPublisher::Shutdown() {
 }
 
 void ImuSensorPublisher::PublishSensorData() {
@@ -108,6 +99,7 @@ void ImuSensorPublisher::PublishSensorData() {
 
   avg_interval_ += avg_interval_base_;
 
+  // avoid overflow
   if (counter_ > ONE_MB) {
     avg_interval_ -= ONE_MB;
     counter_ -= ONE_MB;
@@ -124,6 +116,6 @@ void ImuSensorPublisher::CopySensorData(int addr, auto& dest, size_t n) {
   if (addr >= 0) {
     std::memcpy(&dest, &d_->sensordata[addr], n * sizeof(double));
   }
-};
+}
 
 }  // namespace aimrt_mujoco_sim::mujoco_sim_module::publisher

@@ -30,8 +30,8 @@ class JointSensorPublisher : public PublisherBase {
   ~JointSensorPublisher() override = default;
 
   void Initialize(YAML::Node options_node) override;
-  void Start() override;
-  void Shutdown() override;
+  void Start() override {}
+  void Shutdown() override {}
 
   [[nodiscard]] std::string_view Type() const noexcept override { return "joint_sensor"; }
 
@@ -59,15 +59,15 @@ class JointSensorPublisher : public PublisherBase {
 
  private:
   struct SensorAddrGroup {
-    int32_t jointpos_addr;
-    int32_t jointvel_addr;
-    int32_t jointactuatorfrc_addr;
+    int32_t jointpos_addr = -1;
+    int32_t jointvel_addr = -1;
+    int32_t jointactuatorfrc_addr = -1;
   };
 
   struct SensorStateGroup {
-    double jointpos_state;
-    double jointvel_state;
-    double jointactuatorfrc_state;
+    double jointpos_state = 0.0;
+    double jointvel_state = 0.0;
+    double jointactuatorfrc_state = 0.0;
   };
 
  private:
