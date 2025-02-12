@@ -14,6 +14,10 @@
 
 #include "yaml-cpp/yaml.h"
 
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
+  #include "mujoco_sim_module/publisher/imu_sensor_ros2_publisher.h"
+#endif
+
 namespace YAML {
 template <>
 struct convert<aimrt_mujoco_sim::mujoco_sim_module::MujocoSimModule::Options> {
@@ -232,6 +236,10 @@ void MujocoSimModule::RegisterPublisherGenFunc() {
 
   generator.template operator()<publisher::JointSensorPublisher>("joint_sensor");
   generator.template operator()<publisher::ImuSensorPublisher>("imu_sensor");
+
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
+  generator.template operator()<publisher::ImuSensorRos2Publisher>("imu_sensor_ros2");
+#endif
 }
 
 aimrt::co::Task<void> MujocoSimModule::GuiLoop() {

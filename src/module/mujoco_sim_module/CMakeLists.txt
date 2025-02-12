@@ -16,11 +16,28 @@ set(CUR_TARGET_ALIAS_NAME ${CUR_SUPERIOR_NAMESPACE}::${CUR_DIR})
 file(GLOB_RECURSE head_files ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 file(GLOB_RECURSE src ${CMAKE_CURRENT_SOURCE_DIR}/*.cc)
 file(GLOB_RECURSE test_files ${CMAKE_CURRENT_SOURCE_DIR}/*_test.cc)
+file(GLOB_RECURSE with_ros2_files ${CMAKE_CURRENT_SOURCE_DIR}/*ros2*.cc ${CMAKE_CURRENT_SOURCE_DIR}/*ros2*.h)
 list(REMOVE_ITEM src ${test_files})
 
 # Add target
 add_library(${CUR_TARGET_NAME} STATIC)
 add_library(${CUR_TARGET_ALIAS_NAME} ALIAS ${CUR_TARGET_NAME})
+
+# deal with ROS2 related files and dependencies
+if(AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
+  find_package(rclcpp REQUIRED)
+  find_package(sensor_msgs REQUIRED)
+  set(ADDITIONAL_ROS2_DEPS
+      aimrt::interface::aimrt_module_ros2_interface #
+      sensor_msgs::sensor_msgs__rosidl_generator_cpp #
+      sensor_msgs::sensor_msgs__rosidl_typesupport_cpp)
+    target_compile_definitions(${CUR_TARGET_NAME} PRIVATE AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
+else()
+  # remove ROS2 related files and dependencies
+  list(REMOVE_ITEM src ${with_ros2_files})
+  list(REMOVE_ITEM head_files ${with_ros2_files})
+  set(ADDITIONAL_ROS2_DEPS "")
+endif()
 
 # Set source file of target
 target_sources(${CUR_TARGET_NAME} PRIVATE ${src})
@@ -39,7 +56,8 @@ target_link_libraries(
          aimrt_mujoco_sim::protocols::imu_pb_gencode
          mujoco::libsimulate
          mujoco::mujoco
-         glfw)
+         glfw
+         ${ADDITIONAL_ROS2_DEPS})
 
 # Set test of target
 if(AIMRT_MUJOCO_SIM_BUILD_TESTS AND test_files)
