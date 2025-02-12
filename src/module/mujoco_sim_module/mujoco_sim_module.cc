@@ -12,8 +12,6 @@
 #include "mujoco_sim_module/publisher/joint_sensor_publisher.h"
 #include "mujoco_sim_module/subscriber/joint_actuator_subscriber.h"
 
-#include "yaml-cpp/yaml.h"
-
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
   #include "mujoco_sim_module/publisher/imu_sensor_ros2_publisher.h"
 #endif
