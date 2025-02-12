@@ -39,7 +39,7 @@ inline double GetAvgIntervalBase(const uint32_t channel_frq) {
     return -1;
   }
 
-  int32_t sensor_addr = mj_name2id(m, mjOBJ_SENSOR, sensor_name.c_str());
+  int32_t sensor_addr = m->sensor_adr[mj_name2id(m, mjOBJ_SENSOR, sensor_name.c_str())];
   AIMRT_CHECK_ERROR_THROW(sensor_addr >= 0, "Invalid sensor name: {}.", sensor_name);
 
   return sensor_addr;

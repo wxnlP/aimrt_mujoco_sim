@@ -61,7 +61,7 @@ class ImuSensorPublisher : public PublisherBase {
 
   struct SensorStateGroup {
     struct {
-      double x, y, z, w;
+      double w, x, y, z;
     } orientation;
     struct {
       double x, y, z;

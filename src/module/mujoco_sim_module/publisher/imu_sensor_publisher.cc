@@ -87,15 +87,21 @@ void ImuSensorPublisher::PublishSensorData() {
     orientation->set_z(state_array->orientation.z);
     orientation->set_w(state_array->orientation.w);
 
+    state.mutable_orientation_covariance()->Resize(9, 0.0);
+
     auto* angular_velocity = state.mutable_angular_velocity();
     angular_velocity->set_x(state_array->angular_velocity.x);
     angular_velocity->set_y(state_array->angular_velocity.y);
     angular_velocity->set_z(state_array->angular_velocity.z);
 
+    state.mutable_angular_velocity_covariance()->Resize(9, 0.0);
+
     auto* linear_acceleration = state.mutable_linear_acceleration();
     linear_acceleration->set_x(state_array->linear_acceleration.x);
     linear_acceleration->set_y(state_array->linear_acceleration.y);
     linear_acceleration->set_z(state_array->linear_acceleration.z);
+
+    state.mutable_linear_acceleration_covariance()->Resize(9, 0.0);
 
     aimrt::channel::Publish(publisher_, state);
   });
@@ -116,7 +122,7 @@ void ImuSensorPublisher::RegisterSensorAddr() {
 
 void ImuSensorPublisher::CopySensorData(int addr, auto& dest, size_t n) {
   if (addr >= 0) {
-    std::memcpy(&dest, &d_->sensordata[addr], n * sizeof(float));
+    std::memcpy(&dest, &d_->sensordata[addr], n * sizeof(double));
   }
 };
 
