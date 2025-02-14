@@ -86,7 +86,7 @@ void JointPdActuatorRos2Subscriber::EventHandle(const std::shared_ptr<const sens
     const auto& joint_options = options_.joints[ii];
     const auto command = commands->joints[ii];
 
-    if (command.name != joint_options.name) [[unlikely]] {
+    if (std::ranges::find(joint_names_vec_, command.name) == joint_names_vec_.end()) [[unlikely]] {
       AIMRT_WARN("Invalid msg for topic '{}', msg: {}, Joint name '{}' is not matched.",
                  subscriber_.GetTopic(), sensor_ros2::msg::to_yaml(*commands), command.name);
 
@@ -120,6 +120,7 @@ void JointPdActuatorRos2Subscriber::RegisterActuatorAddr() {
     AIMRT_CHECK_ERROR_THROW(actuator_id >= 0, "Invalid bind_actuator_name '{}'.", joint.bind_actuator_name);
 
     actuator_addr_vec_.emplace_back(actuator_id);
+    joint_names_vec_.emplace_back(joint.name);
   }
 
   joint_num_ = actuator_addr_vec_.size();

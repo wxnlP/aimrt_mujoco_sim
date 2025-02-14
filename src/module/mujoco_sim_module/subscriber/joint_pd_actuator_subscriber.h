@@ -59,6 +59,7 @@ class JointPdActuatorSubscriber : public SubscriberBase {
   size_t joint_num_ = 0;
   std::vector<size_t> actuator_addr_vec_;
   std::atomic<double*> command_array_{nullptr};
+  std::vector<std::string> joint_names_vec_;
 };
 
 }  // namespace aimrt_mujoco_sim::mujoco_sim_module::subscriber

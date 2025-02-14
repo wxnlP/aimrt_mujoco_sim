@@ -87,7 +87,7 @@ void JointPdActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::p
     const auto& joint_options = options_.joints[ii];
     const auto& command = commands->data()[ii];
 
-    if (command.name() != joint_options.name) [[unlikely]] {
+    if (std::ranges::find(joint_names_vec_, command.name()) == joint_names_vec_.end()) [[unlikely]] {
       AIMRT_WARN("Invalid msg for topic '{}', msg: {}",
                  subscriber_.GetTopic(), aimrt::Pb2CompactJson(*commands));
 
@@ -121,6 +121,7 @@ void JointPdActuatorSubscriber::RegisterActuatorAddr() {
     AIMRT_CHECK_ERROR_THROW(actuator_id >= 0, "Invalid bind_actuator_name '{}'.", joint.bind_actuator_name);
 
     actuator_addr_vec_.emplace_back(actuator_id);
+    joint_names_vec_.emplace_back(joint.name);
   }
 
   joint_num_ = actuator_addr_vec_.size();
