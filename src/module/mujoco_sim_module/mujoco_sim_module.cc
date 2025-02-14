@@ -15,6 +15,7 @@
 
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
   #include "mujoco_sim_module/publisher/imu_sensor_ros2_publisher.h"
+  #include "mujoco_sim_module/publisher/touch_sensor_ros2_publisher.h"
 #endif
 
 namespace YAML {
@@ -239,6 +240,7 @@ void MujocoSimModule::RegisterPublisherGenFunc() {
 
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
   generator.template operator()<publisher::ImuSensorRos2Publisher>("imu_sensor_ros2");
+  generator.template operator()<publisher::TouchSensorRos2Publisher>("touch_sensor_ros2");
 #endif
 }
 

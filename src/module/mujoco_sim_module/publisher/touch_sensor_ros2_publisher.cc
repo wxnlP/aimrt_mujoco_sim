@@ -1,12 +1,12 @@
 // Copyright (c) 2023, AgiBot Inc.
 // All rights reserved.
 
-#include "mujoco_sim_module/publisher/touch_sensor_publisher.h"
+#include "mujoco_sim_module/publisher/touch_sensor_ros2_publisher.h"
 
 namespace YAML {
 template <>
-struct convert<aimrt_mujoco_sim::mujoco_sim_module::publisher ::TouchSensorPublisher::Options> {
-  using Options = aimrt_mujoco_sim::mujoco_sim_module::publisher ::TouchSensorPublisher::Options;
+struct convert<aimrt_mujoco_sim::mujoco_sim_module::publisher ::TouchSensorRos2Publisher::Options> {
+  using Options = aimrt_mujoco_sim::mujoco_sim_module::publisher ::TouchSensorRos2Publisher::Options;
 
   static YAML::Node encode(const Options& rhs) {
     YAML::Node node;
@@ -67,7 +67,7 @@ struct convert<aimrt_mujoco_sim::mujoco_sim_module::publisher ::TouchSensorPubli
 
 namespace aimrt_mujoco_sim::mujoco_sim_module::publisher {
 
-void TouchSensorPublisher::Initialize(YAML::Node options_node) {
+void TouchSensorRos2Publisher::Initialize(YAML::Node options_node) {
   if (options_node && !options_node.IsNull())
     options_ = options_node.as<Options>();
 
@@ -77,12 +77,12 @@ void TouchSensorPublisher::Initialize(YAML::Node options_node) {
 
   options_node = options_;
 
-  bool ret = aimrt::channel::RegisterPublishType<aimrt::protocols::sensor::TouchState>(publisher_);
+  bool ret = aimrt::channel::RegisterPublishType<sensor_ros2::msg::TouchState>(publisher_);
 
   AIMRT_CHECK_ERROR_THROW(ret, "Register touch sensor publish type failed.");
 }
 
-void TouchSensorPublisher::PublishSensorData() {
+void TouchSensorRos2Publisher::PublishSensorData() {
   static constexpr uint32_t ONE_MB = 1024 * 1024;
 
   if (counter_++ < avg_interval_) return;
@@ -100,22 +100,27 @@ void TouchSensorPublisher::PublishSensorData() {
   }
 
   executor_.Execute([this, state_array = std::move(state_array)]() {
-    aimrt::protocols::sensor::TouchState state;
+    sensor_ros2::msg::TouchState state;
 
     auto timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    state.mutable_header()->set_time_stamp(timestamp);
-    state.mutable_header()->set_frame_id("touch_sensor");
+    state.header.stamp.sec = timestamp / 1e9;
+    state.header.stamp.nanosec = timestamp % static_cast<uint64_t>(1e9);
+    state.header.frame_id = "touch_sensor";
 
-    state.mutable_names()->Reserve(touch_group_num_);
-    state.mutable_states()->Reserve(touch_group_num_);
+    state.names.resize(touch_group_num_);
+    state.states.resize(touch_group_num_);
 
-    for (int i = 0; i < touch_group_num_; ++i) {
-      state.add_names(name_vec_[i]);
-      auto* states = state.add_states();
-      states->mutable_pressure()->Reserve(touch_num_vec_[i]);
-      for (int j = 0; j < touch_num_vec_[i]; ++j) {
-        states->add_pressure(state_array[i].state_vec[j]);
+    for (size_t i = 0; i < touch_group_num_; ++i) {
+      state.names[i] = name_vec_[i];
+
+      sensor_ros2::msg::SingleTouchState single_state;
+      single_state.pressure.resize(touch_num_vec_[i]);
+
+      for (size_t j = 0; j < touch_num_vec_[i]; ++j) {
+        single_state.pressure[j] = static_cast<int16_t>(state_array[i].state_vec[j]);
       }
+
+      state.states[i] = single_state;
     }
 
     aimrt::channel::Publish(publisher_, state);
@@ -130,7 +135,7 @@ void TouchSensorPublisher::PublishSensorData() {
   }
 }
 
-void TouchSensorPublisher::RegisterSensorAddr() {
+void TouchSensorRos2Publisher::RegisterSensorAddr() {
   touch_group_num_ = options_.names.size();
 
   for (size_t index = 0; index < touch_group_num_; ++index) {

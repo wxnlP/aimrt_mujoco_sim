@@ -6,8 +6,17 @@
 #include "aimrt_module_protobuf_interface/util/protobuf_type_support.h"
 #include "touch.pb.h"
 
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
+  #include "aimrt_module_ros2_interface/util/ros2_type_support.h"
+  #include "sensor_ros2/msg/touch_state.hpp"
+#endif
+
 static const aimrt_type_support_base_t* type_support_array[]{
     aimrt::GetProtobufMessageTypeSupport<aimrt::protocols::sensor::TouchState>(),
+
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
+    aimrt::GetRos2MessageTypeSupport<sensor_ros2::msg::TouchState>(),
+#endif
 };
 
 extern "C" {
