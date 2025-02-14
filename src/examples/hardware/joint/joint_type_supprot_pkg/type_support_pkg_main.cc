@@ -6,9 +6,11 @@
 #include "aimrt_module_protobuf_interface/util/protobuf_type_support.h"
 
 #include "joint.pb.h"
+#include "joint_pd.pb.h"
 
 static const aimrt_type_support_base_t* type_support_array[]{
     aimrt::GetProtobufMessageTypeSupport<aimrt::protocols::sensor::JointState>(),
+    aimrt::GetProtobufMessageTypeSupport<aimrt::protocols::sensor::JointPdState>(),
 };
 
 extern "C" {
