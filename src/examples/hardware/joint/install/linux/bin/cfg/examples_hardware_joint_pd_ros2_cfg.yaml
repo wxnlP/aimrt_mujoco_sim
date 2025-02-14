@@ -64,15 +64,14 @@ MujocoSimModule:
       type: joint_pd_actuator_ros2
       options:
         joints:
-          - name: right_motor
-            bind_joint: right_wheel
-            bind_actuator_type: motor
-            bind_actuator_name: right_motor
           - name: left_motor
             bind_joint: left_wheel
             bind_actuator_type: motor
             bind_actuator_name: left_motor
-
+          - name: right_motor
+            bind_joint: right_wheel
+            bind_actuator_type: motor
+            bind_actuator_name: right_motor
   publisher_options:
     - topic: /examples_hardware/joint/joint_state
       frequency: 1
@@ -80,12 +79,11 @@ MujocoSimModule:
       type: joint_sensor
       options:
         joints:
-          - name: right_wheel
-            bind_joint: right_wheel
-            bind_jointactuatorfrc_sensor: right_frc_sensor
-            bind_jointvel_sensor: right_vel_sensor
-          - name: left_wheel
+          - name: left_wheel_sensor
             bind_joint: left_wheel
             bind_jointactuatorfrc_sensor: left_frc_sensor
             bind_jointvel_sensor: left_vel_sensor
-
+          - name: right_wheel_sensor
+            bind_joint: right_wheel
+            bind_jointactuatorfrc_sensor: right_frc_sensor
+            bind_jointvel_sensor: right_vel_sensor

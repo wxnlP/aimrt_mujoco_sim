@@ -13,28 +13,27 @@ JSON_DATA=$(cat <<EOF
 {
   "header": {
     "stamp": {
-      "sec": 123,
+      "sec": 1234567890,
       "nanosec": 123456789
     },
-    "frame_id": "joint_pd_ros2_command"
+    "frame_id": "base_link"
   },
-  "sequence": 0,
   "joints": [
-    {
-      "name": "right_motor",
-      "sequence": 0,
-      "position": 0.0,
-      "velocity": 0.0,
-      "effort": $RIGHT_MOTOR_EFFORT,
-      "stiffness": 1.0,
-      "damping": 1.0
-    },
     {
       "name": "left_motor",
       "sequence": 0,
       "position": 0.0,
       "velocity": 0.0,
-      "effort": $LEFT_MOTOR_EFFORT,
+      "effort": $LEFT_MOTOR,
+      "stiffness": 1.0,
+      "damping": 1.0
+    },
+    {
+      "name": "right_motor",
+      "sequence": 2,
+      "position": 0.0,
+      "velocity": 0.0,
+      "effort": $RIGHT_MOTOR,
       "stiffness": 1.0,
       "damping": 1.0
     }

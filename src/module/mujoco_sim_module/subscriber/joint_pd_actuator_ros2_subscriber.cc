@@ -87,8 +87,8 @@ void JointPdActuatorRos2Subscriber::EventHandle(const std::shared_ptr<const sens
     const auto command = commands->joints[ii];
 
     if (command.name != joint_options.name) [[unlikely]] {
-      // AIMRT_WARN("Invalid msg for topic '{}', msg: {}",
-      //            subscriber_.GetTopic(), sensor_ros2::msg::JointPdState::to_yaml(*commands));
+      AIMRT_WARN("Invalid msg for topic '{}', msg: {}, Joint name '{}' is not matched.",
+                 subscriber_.GetTopic(), sensor_ros2::msg::to_yaml(*commands), command.name);
 
       delete[] new_command_array;
       return;
