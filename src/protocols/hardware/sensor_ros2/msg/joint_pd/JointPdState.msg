@@ -1,3 +1,3 @@
 std_msgs/Header header
 
-Command[] joints
+State[] joints
