@@ -61,7 +61,7 @@ MujocoSimModule:
   gui_executor: gui_thread
   subscriber_options:
     - topic: /examples_hardware/joint/joint_pd_command
-      type: joint_pd_actuator
+      type: joint_pd_actuator_ros2
       options:
         joints:
           - name: right_motor
