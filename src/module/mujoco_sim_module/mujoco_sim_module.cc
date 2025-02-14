@@ -10,10 +10,12 @@
 #include "mujoco_sim_module/global.h"
 #include "mujoco_sim_module/publisher/imu_sensor_publisher.h"
 #include "mujoco_sim_module/publisher/joint_sensor_publisher.h"
+#include "mujoco_sim_module/publisher/touch_sensor_publisher.h"
 #include "mujoco_sim_module/subscriber/joint_actuator_subscriber.h"
 
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
   #include "mujoco_sim_module/publisher/imu_sensor_ros2_publisher.h"
+  #include "mujoco_sim_module/publisher/touch_sensor_ros2_publisher.h"
 #endif
 
 namespace YAML {
@@ -234,9 +236,11 @@ void MujocoSimModule::RegisterPublisherGenFunc() {
 
   generator.template operator()<publisher::JointSensorPublisher>("joint_sensor");
   generator.template operator()<publisher::ImuSensorPublisher>("imu_sensor");
+  generator.template operator()<publisher::TouchSensorPublisher>("touch_sensor");
 
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
   generator.template operator()<publisher::ImuSensorRos2Publisher>("imu_sensor_ros2");
+  generator.template operator()<publisher::TouchSensorRos2Publisher>("touch_sensor_ros2");
 #endif
 }
 

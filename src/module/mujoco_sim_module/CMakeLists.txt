@@ -27,11 +27,16 @@ add_library(${CUR_TARGET_ALIAS_NAME} ALIAS ${CUR_TARGET_NAME})
 if(AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
   find_package(rclcpp REQUIRED)
   find_package(sensor_msgs REQUIRED)
+
   set(ADDITIONAL_ROS2_DEPS
       aimrt::interface::aimrt_module_ros2_interface #
+      sensor_ros2::sensor_ros2__rosidl_generator_cpp #
+      sensor_ros2::sensor_ros2__rosidl_typesupport_cpp #
+      sensor_ros2::sensor_ros2__rosidl_typesupport_fastrtps_cpp #
+      sensor_ros2::sensor_ros2__rosidl_typesupport_introspection_cpp #
       sensor_msgs::sensor_msgs__rosidl_generator_cpp #
       sensor_msgs::sensor_msgs__rosidl_typesupport_cpp)
-    target_compile_definitions(${CUR_TARGET_NAME} PRIVATE AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
+  target_compile_definitions(${CUR_TARGET_NAME} PRIVATE AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
 else()
   # remove ROS2 related files and dependencies
   list(REMOVE_ITEM src ${with_ros2_files})
@@ -52,8 +57,7 @@ target_link_libraries(
   ${CUR_TARGET_NAME}
   PRIVATE yaml-cpp::yaml-cpp
   PUBLIC aimrt::interface::aimrt_module_cpp_interface
-         aimrt_mujoco_sim::protocols::joint_pb_gencode
-         aimrt_mujoco_sim::protocols::imu_pb_gencode
+         aimrt_mujoco_sim::protocols::sensor_pb_gencode
          mujoco::libsimulate
          mujoco::mujoco
          glfw
