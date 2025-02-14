@@ -11,10 +11,13 @@ package aimrt.protocols.sensor;
 message Quaternion {
   // The x component of the quaternion.
   double x = 1;
+
   // The y component of the quaternion.
   double y = 2;
+
   // The z component of the quaternion.
   double z = 3;
+
   // The w component of the quaternion.  This is often referred to as the real part.
   double w = 4;
 }
@@ -23,8 +26,10 @@ message Quaternion {
 message Vector3 {
   // The x component of the vector.
   double x = 1;
+
   // The y component of the vector.
   double y = 2;
+
   // The z component of the vector.
   double z = 3;
 }
