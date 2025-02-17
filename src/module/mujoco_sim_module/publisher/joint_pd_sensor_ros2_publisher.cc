@@ -88,7 +88,7 @@ void JointPdSensorRos2Publisher::PublishSensorData() {
     auto timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     state.header.stamp.sec = timestamp / 1e9;
     state.header.stamp.nanosec = timestamp % static_cast<uint64_t>(1e9);
-    state.header.frame_id = "touch_sensor";
+    state.header.frame_id = "joint_pd_sensor";
 
     state.joints.resize(joint_num_);
     for (int i = 0; i < joint_num_; ++i) {
