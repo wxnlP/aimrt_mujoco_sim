@@ -18,7 +18,7 @@ aimrt:
             - path: ./libjoint_type_supprot_pkg.so        
           topic_meta_list:
             - topic_name: /examples_hardware/joint/joint_state
-              msg_type: pb:aimrt.protocols.sensor.JointState    
+              msg_type: ros2:sensor_ros2/msg/JointPdState    
               echo_type: json
   log:
     core_lvl: INFO # Trace/Debug/Info/Warn/Error/Fatal/Off
@@ -76,7 +76,7 @@ MujocoSimModule:
     - topic: /examples_hardware/joint/joint_state
       frequency: 1
       executor: work_thread_pool
-      type: joint_sensor
+      type: joint_pd_sensor_ros2
       options:
         joints:
           - name: left_wheel_sensor
