@@ -58,7 +58,7 @@ void JointActuatorSubscriber::Initialize(YAML::Node options_node) {
 
   options_node = options_;
 
-  bool ret = aimrt::channel::Subscribe<aimrt::protocols::sensor::JointState>(
+  bool ret = aimrt::channel::Subscribe<aimrt::protocols::sensor::JointCommand>(
       subscriber_,
       std::bind(&JointActuatorSubscriber::EventHandle, this, std::placeholders::_1));
 
@@ -77,7 +77,7 @@ void JointActuatorSubscriber::ApplyCtrlData() {
   }
 }
 
-void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::protocols::sensor::JointState>& commands) {
+void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::protocols::sensor::JointCommand>& commands) {
   if (stop_flag_) [[unlikely]]
     return;
 
@@ -85,7 +85,7 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
 
   for (size_t ii = 0; ii < joint_num_; ++ii) {
     const auto& joint_options = options_.joints[ii];
-    const auto& command = commands->data()[ii];
+    const auto& command = commands->commands()[ii];
 
     if (std::ranges::find(joint_names_vec_, command.name()) == joint_names_vec_.end()) [[unlikely]] {
       AIMRT_WARN("Invalid msg for topic '{}', msg: {}",
@@ -101,7 +101,12 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
       new_command_array[ii] = command.velocity();
     } else {
       // motor
-      new_command_array[ii] = command.effort();
+      int32_t actuator_addr = actuator_addr_vec_[ii];
+      double state_posiotin = d_->qpos[actuator_addr];
+      double state_velocity = d_->qvel[actuator_addr];
+      new_command_array[ii] = command.effort() +
+                              command.stiffness() * (command.position() - state_posiotin) +
+                              command.damping() * (command.velocity() - state_velocity);
     }
   }
 

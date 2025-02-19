@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include "joint.pb.h"
+#include "joint_command.pb.h"
 #include "mujoco_sim_module/global.h"
 #include "mujoco_sim_module/subscriber/subscriber_base.h"
 
@@ -44,7 +44,7 @@ class JointActuatorSubscriber : public SubscriberBase {
   void ApplyCtrlData() override;
 
  private:
-  void EventHandle(const std::shared_ptr<const aimrt::protocols::sensor::JointState>& commands);
+  void EventHandle(const std::shared_ptr<const aimrt::protocols::sensor::JointCommand>& commands);
 
   void RegisterActuatorAddr();
 

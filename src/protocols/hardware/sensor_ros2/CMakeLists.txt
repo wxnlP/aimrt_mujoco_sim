@@ -29,8 +29,10 @@ set(BUILD_SHARED_LIBS ON)
 rosidl_generate_interfaces(${CUR_PACKAGE_NAME}
   "msg/foot_sensor_state/SingleFootSensorState.msg"
   "msg/foot_sensor_state/FootSensorState.msg"
-  "msg/joint_pd/State.msg"
-  "msg/joint_pd/JointPdState.msg"
+  "msg/joint_state/SingleJointState.msg"
+  "msg/joint_state/JointState.msg"
+  "msg/joint_command/SingleJointCommand.msg"
+  "msg/joint_command/JointCommand.msg"
   DEPENDENCIES std_msgs
 )
 # cmake-format: on

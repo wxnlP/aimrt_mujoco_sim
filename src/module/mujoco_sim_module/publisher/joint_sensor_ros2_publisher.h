@@ -7,11 +7,11 @@
 #include "mujoco_sim_module/global.h"
 #include "mujoco_sim_module/publisher/publisher_base.h"
 #include "mujoco_sim_module/publisher/utils.h"
-#include "sensor_ros2/msg/joint_pd_state.hpp"
+#include "sensor_ros2/msg/joint_state.hpp"
 
 namespace aimrt_mujoco_sim::mujoco_sim_module::publisher {
 
-class JointPdSensorRos2Publisher : public PublisherBase {
+class JointSensorRos2Publisher : public PublisherBase {
  public:
   struct Options {
     struct Joint {
@@ -25,14 +25,14 @@ class JointPdSensorRos2Publisher : public PublisherBase {
   };
 
  public:
-  JointPdSensorRos2Publisher() = default;
-  ~JointPdSensorRos2Publisher() override = default;
+  JointSensorRos2Publisher() = default;
+  ~JointSensorRos2Publisher() override = default;
 
   void Initialize(YAML::Node options_node) override;
   void Start() override {}
   void Shutdown() override {}
 
-  [[nodiscard]] std::string_view Type() const noexcept override { return "joint_pd_sensor_ros2"; }
+  [[nodiscard]] std::string_view Type() const noexcept override { return "joint_sensor_ros2"; }
 
   void SetPublisherHandle(aimrt::channel::PublisherRef publisher_handle) override {
     publisher_ = publisher_handle;
