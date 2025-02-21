@@ -85,7 +85,7 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
 
   for (size_t ii = 0; ii < joint_num_; ++ii) {
     const auto& joint_options = options_.joints[ii];
-    const auto& command = commands->commands()[ii];
+    const auto& command = commands->joints()[ii];
 
     if (std::ranges::find(joint_names_vec_, command.name()) == joint_names_vec_.end()) [[unlikely]] {
       AIMRT_WARN("Invalid msg for topic '{}', msg: {}",

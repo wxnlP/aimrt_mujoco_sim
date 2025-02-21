@@ -90,14 +90,14 @@ void JointSensorRos2Publisher::PublishSensorData() {
     joint_state.header.stamp.nanosec = timestamp % static_cast<uint64_t>(1e9);
     joint_state.header.frame_id = "joint_sensor_ros2";
 
-    joint_state.states.resize(joint_num_);
+    joint_state.joints.resize(joint_num_);
     for (int i = 0; i < joint_num_; ++i) {
       sensor_ros2::msg::SingleJointState state;
       state.name = name_vec_[i];
       state.position = state_array[i].jointpos_state;
       state.velocity = state_array[i].jointvel_state;
       state.effort = state_array[i].jointactuatorfrc_state;
-      joint_state.states[i] = state;
+      joint_state.joints[i] = state;
     }
 
     aimrt::channel::Publish(publisher_, joint_state);

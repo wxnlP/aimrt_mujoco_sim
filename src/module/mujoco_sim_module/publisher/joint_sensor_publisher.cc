@@ -85,7 +85,7 @@ void JointSensorPublisher::PublishSensorData() {
   executor_.Execute([this, state_array = std::move(state_array)]() {
     aimrt::protocols::sensor::JointState joint_state;
     for (int i = 0; i < joint_num_; ++i) {
-      auto* data = joint_state.add_states();
+      auto* data = joint_state.add_joints();
       data->set_name(name_vec_[i]);
 
       data->set_position(state_array[i].jointpos_state);

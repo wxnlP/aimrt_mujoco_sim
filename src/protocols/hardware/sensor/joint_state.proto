@@ -35,5 +35,5 @@ message JointState {
   aimrt.protocols.common.Header header = 1;
 
   // List of joint states.
-  repeated SingleJointState states = 2;
+  repeated SingleJointState joints = 2;
 }
