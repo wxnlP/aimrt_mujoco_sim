@@ -11,7 +11,7 @@ ELBOW_POS=${2:-$DEFAULT_ELBOW_POS}
 # build json data
 JSON_DATA=$(cat <<EOF
 {
-  "commands": [
+  "joints": [
     {
       "name": "shoulder_actuator",
       "position": $SHOULDER_POS,

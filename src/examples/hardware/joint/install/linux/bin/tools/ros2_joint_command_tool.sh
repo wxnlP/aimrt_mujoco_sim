@@ -18,7 +18,7 @@ JSON_DATA=$(cat <<EOF
     },
     "frame_id": "base_link"
   },
-  "commands": [
+  "joints": [
     {
       "name": "shoulder_actuator",
       "position": $SHOULDER_POS,
