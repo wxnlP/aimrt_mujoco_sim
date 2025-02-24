@@ -8,15 +8,15 @@
 #include "aimrt_module_cpp_interface/co/schedule.h"
 #include "aimrt_module_cpp_interface/co/sync_wait.h"
 #include "mujoco_sim_module/global.h"
-#include "mujoco_sim_module/publisher/foot_sensor_publisher.h"
 #include "mujoco_sim_module/publisher/imu_sensor_publisher.h"
 #include "mujoco_sim_module/publisher/joint_sensor_publisher.h"
+#include "mujoco_sim_module/publisher/touch_sensor_publisher.h"
 #include "mujoco_sim_module/subscriber/joint_actuator_subscriber.h"
 
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
-  #include "mujoco_sim_module/publisher/foot_sensor_ros2_publisher.h"
   #include "mujoco_sim_module/publisher/imu_sensor_ros2_publisher.h"
   #include "mujoco_sim_module/publisher/joint_sensor_ros2_publisher.h"
+  #include "mujoco_sim_module/publisher/touch_sensor_ros2_publisher.h"
   #include "mujoco_sim_module/subscriber/joint_actuator_ros2_subscriber.h"
 
 #endif
@@ -243,10 +243,10 @@ void MujocoSimModule::RegisterPublisherGenFunc() {
 
   generator.template operator()<publisher::JointSensorPublisher>("joint_sensor");
   generator.template operator()<publisher::ImuSensorPublisher>("imu_sensor");
-  generator.template operator()<publisher::FootSensorPublisher>("foot_sensor");
+  generator.template operator()<publisher::TouchSensorPublisher>("touch_sensor");
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
   generator.template operator()<publisher::ImuSensorRos2Publisher>("imu_sensor_ros2");
-  generator.template operator()<publisher::FootSensorRos2Publisher>("foot_sensor_ros2");
+  generator.template operator()<publisher::TouchSensorRos2Publisher>("touch_sensor_ros2");
   generator.template operator()<publisher::JointSensorRos2Publisher>("joint_sensor_ros2");
 #endif
 }

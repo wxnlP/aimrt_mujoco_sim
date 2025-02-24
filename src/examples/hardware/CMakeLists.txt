@@ -5,4 +5,4 @@ set_namespace()
 
 add_subdirectory(joint)
 add_subdirectory(imu)
-add_subdirectory(foot_sensor)
+add_subdirectory(touch_sensor)

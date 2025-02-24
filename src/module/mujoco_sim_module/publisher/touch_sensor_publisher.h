@@ -3,34 +3,35 @@
 
 #pragma once
 
-#include "aimrt_module_ros2_interface/channel/ros2_channel.h"
+#include "aimrt_module_protobuf_interface/channel/protobuf_channel.h"
+#include "aimrt_module_protobuf_interface/util/protobuf_tools.h"
 #include "mujoco_sim_module/global.h"
 #include "mujoco_sim_module/publisher/publisher_base.h"
 #include "mujoco_sim_module/publisher/utils.h"
-#include "sensor_ros2/msg/foot_sensor_state.hpp"
+#include "touch_sensor_state.pb.h"
 
 namespace aimrt_mujoco_sim::mujoco_sim_module::publisher {
-class FootSensorRos2Publisher : public PublisherBase {
+class TouchSensorPublisher : public PublisherBase {
  public:
   struct Options {
     std::vector<std::string> names;
 
     struct State {
       std::string bind_site;
-      std::string bind_foot_sensor;
+      std::string bind_touch_sensor;
     };
     std::vector<std::vector<State>> states;
   };
 
  public:
-  FootSensorRos2Publisher() = default;
-  ~FootSensorRos2Publisher() override = default;
+  TouchSensorPublisher() = default;
+  ~TouchSensorPublisher() override = default;
 
   void Initialize(YAML::Node options_node) override;
   void Start() override {}
   void Shutdown() override {}
 
-  [[nodiscard]] std::string_view Type() const noexcept override { return "foot_sensor_ros2"; }
+  [[nodiscard]] std::string_view Type() const noexcept override { return "touch_sensor"; }
 
   void SetPublisherHandle(aimrt::channel::PublisherRef publisher_handle) override {
     publisher_ = publisher_handle;
@@ -76,11 +77,11 @@ class FootSensorRos2Publisher : public PublisherBase {
   double avg_interval_base_ = 1.0;
   double avg_interval_ = 0;
 
-  uint32_t foot_sensor_group_num_ = 0;
+  uint32_t touch_sensor_group_num_ = 0;
   uint32_t counter_ = 0;
 
   std::vector<SensorAddrGroup> sensor_addr_group_vec_;
   std::vector<std::string> name_vec_;
-  std::vector<uint32_t> foot_sensor_num_vec_;
+  std::vector<uint32_t> touch_sensor_num_vec_;
 };
 }  // namespace aimrt_mujoco_sim::mujoco_sim_module::publisher
