@@ -77,7 +77,7 @@ void TouchSensorRos2Publisher::Initialize(YAML::Node options_node) {
 
   options_node = options_;
 
-  bool ret = aimrt::channel::RegisterPublishType<sensor_ros2::msg::TouchState>(publisher_);
+  bool ret = aimrt::channel::RegisterPublishType<sensor_ros2::msg::TouchSensorState>(publisher_);
 
   AIMRT_CHECK_ERROR_THROW(ret, "Register touch sensor publish type failed.");
 }
@@ -87,12 +87,12 @@ void TouchSensorRos2Publisher::PublishSensorData() {
 
   if (counter_++ < avg_interval_) return;
 
-  std::unique_ptr<SensorStateGroup[]> state_array(new SensorStateGroup[touch_group_num_]);
+  std::unique_ptr<SensorStateGroup[]> state_array(new SensorStateGroup[touch_sensor_group_num_]);
 
   // if not define specific sensor , its value is set to 0.0
-  for (size_t i = 0; i < touch_group_num_; i++) {
+  for (size_t i = 0; i < touch_sensor_group_num_; i++) {
     const auto& addr_vec = sensor_addr_group_vec_[i].addr_vec;
-    state_array[i].state_vec.reserve(touch_num_vec_[i]);
+    state_array[i].state_vec.reserve(touch_sensor_num_vec_[i]);
     std::transform(addr_vec.begin(),
                    addr_vec.end(),
                    state_array[i].state_vec.begin(),
@@ -100,23 +100,23 @@ void TouchSensorRos2Publisher::PublishSensorData() {
   }
 
   executor_.Execute([this, state_array = std::move(state_array)]() {
-    sensor_ros2::msg::TouchState state;
+    sensor_ros2::msg::TouchSensorState state;
 
     auto timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     state.header.stamp.sec = timestamp / 1e9;
     state.header.stamp.nanosec = timestamp % static_cast<uint64_t>(1e9);
     state.header.frame_id = "touch_sensor";
 
-    state.names.resize(touch_group_num_);
-    state.states.resize(touch_group_num_);
+    state.names.resize(touch_sensor_group_num_);
+    state.states.resize(touch_sensor_group_num_);
 
-    for (size_t i = 0; i < touch_group_num_; ++i) {
+    for (size_t i = 0; i < touch_sensor_group_num_; ++i) {
       state.names[i] = name_vec_[i];
 
-      sensor_ros2::msg::SingleTouchState single_state;
-      single_state.pressure.resize(touch_num_vec_[i]);
+      sensor_ros2::msg::SingleTouchSensorState single_state;
+      single_state.pressure.resize(touch_sensor_num_vec_[i]);
 
-      for (size_t j = 0; j < touch_num_vec_[i]; ++j) {
+      for (size_t j = 0; j < touch_sensor_num_vec_[i]; ++j) {
         single_state.pressure[j] = static_cast<int16_t>(state_array[i].state_vec[j]);
       }
 
@@ -136,9 +136,9 @@ void TouchSensorRos2Publisher::PublishSensorData() {
 }
 
 void TouchSensorRos2Publisher::RegisterSensorAddr() {
-  touch_group_num_ = options_.names.size();
+  touch_sensor_group_num_ = options_.names.size();
 
-  for (size_t index = 0; index < touch_group_num_; ++index) {
+  for (size_t index = 0; index < touch_sensor_group_num_; ++index) {
     name_vec_.emplace_back(options_.names[index]);
 
     std::vector<int32_t> addr_vec;
@@ -149,7 +149,7 @@ void TouchSensorRos2Publisher::RegisterSensorAddr() {
                      return GetSensorAddr(m_, state.bind_touch_sensor);
                    });
 
-    touch_num_vec_.emplace_back(addr_vec.size());
+    touch_sensor_num_vec_.emplace_back(addr_vec.size());
 
     sensor_addr_group_vec_.emplace_back(SensorAddrGroup{
         .addr_vec = std::move(addr_vec)});

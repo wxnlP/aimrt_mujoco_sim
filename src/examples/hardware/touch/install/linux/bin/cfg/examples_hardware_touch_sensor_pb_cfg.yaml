@@ -8,10 +8,10 @@ aimrt:
         path: ./libaimrt_echo_plugin.so
         options:
           type_support_pkgs:
-            - path: ./libtouch_type_support_pkg.so        
+            - path: ./libtouch_sensor_type_support_pkg.so        
           topic_meta_list:
-            - topic_name: /examples_hardware/touch/touch_state
-              msg_type: ros2:sensor_ros2/msg/TouchState    
+            - topic_name: /examples_hardware/touch_sensor/touch_sensor_state
+              msg_type: pb:aimrt.protocols.sensor.TouchSensorState    
               echo_type: json
   log:
     core_lvl: INFO # Trace/Debug/Info/Warn/Error/Fatal/Off
@@ -44,14 +44,14 @@ aimrt:
 
 # Module custom configuration
 MujocoSimModule:
-  simulation_model_path: ./cfg/model/examples_hardware_touch_model.xml
+  simulation_model_path: ./cfg/model/examples_hardware_touch_sensor_model.xml
   sim_executor: work_thread_pool
   gui_executor: gui_thread
   publisher_options:
-    - topic: /examples_hardware/touch/touch_state
+    - topic: /examples_hardware/touch_sensor/touch_sensor_state
       frequency: 1
       executor: work_thread_pool
-      type: touch_sensor_ros2
+      type: touch_sensor
       options:
         names: 
           - top_ball

@@ -12,13 +12,12 @@
 #include "mujoco_sim_module/publisher/joint_sensor_publisher.h"
 #include "mujoco_sim_module/publisher/touch_sensor_publisher.h"
 #include "mujoco_sim_module/subscriber/joint_actuator_subscriber.h"
-#include "mujoco_sim_module/subscriber/joint_pd_actuator_subscriber.h"
 
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
   #include "mujoco_sim_module/publisher/imu_sensor_ros2_publisher.h"
-  #include "mujoco_sim_module/publisher/joint_pd_sensor_ros2_publisher.h"
+  #include "mujoco_sim_module/publisher/joint_sensor_ros2_publisher.h"
   #include "mujoco_sim_module/publisher/touch_sensor_ros2_publisher.h"
-  #include "mujoco_sim_module/subscriber/joint_pd_actuator_ros2_subscriber.h"
+  #include "mujoco_sim_module/subscriber/joint_actuator_ros2_subscriber.h"
 
 #endif
 
@@ -227,9 +226,9 @@ void MujocoSimModule::RegisterSubscriberGenFunc() {
   };
 
   generator.template operator()<subscriber::JointActuatorSubscriber>("joint_actuator");
-  generator.template operator()<subscriber::JointPdActuatorSubscriber>("joint_pd_actuator");
+
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
-  generator.template operator()<subscriber::JointPdActuatorRos2Subscriber>("joint_pd_actuator_ros2");
+  generator.template operator()<subscriber::JointActuatorRos2Subscriber>("joint_actuator_ros2");
 #endif
 }
 
@@ -248,7 +247,7 @@ void MujocoSimModule::RegisterPublisherGenFunc() {
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
   generator.template operator()<publisher::ImuSensorRos2Publisher>("imu_sensor_ros2");
   generator.template operator()<publisher::TouchSensorRos2Publisher>("touch_sensor_ros2");
-  generator.template operator()<publisher::JointPdSensorRos2Publisher>("joint_pd_sensor_ros2");
+  generator.template operator()<publisher::JointSensorRos2Publisher>("joint_sensor_ros2");
 #endif
 }
 

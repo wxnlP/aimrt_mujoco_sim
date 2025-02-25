@@ -83,9 +83,9 @@ void JointSensorPublisher::PublishSensorData() {
   }
 
   executor_.Execute([this, state_array = std::move(state_array)]() {
-    aimrt::protocols::sensor::JointState state;
+    aimrt::protocols::sensor::JointState joint_state;
     for (int i = 0; i < joint_num_; ++i) {
-      auto* data = state.add_data();
+      auto* data = joint_state.add_joints();
       data->set_name(name_vec_[i]);
 
       data->set_position(state_array[i].jointpos_state);
@@ -93,7 +93,7 @@ void JointSensorPublisher::PublishSensorData() {
       data->set_effort(state_array[i].jointactuatorfrc_state);
     }
 
-    aimrt::channel::Publish(publisher_, state);
+    aimrt::channel::Publish(publisher_, joint_state);
   });
 
   avg_interval_ += avg_interval_base_;

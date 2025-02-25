@@ -7,7 +7,7 @@
 #include "mujoco_sim_module/global.h"
 #include "mujoco_sim_module/publisher/publisher_base.h"
 #include "mujoco_sim_module/publisher/utils.h"
-#include "sensor_ros2/msg/touch_state.hpp"
+#include "sensor_ros2/msg/touch_sensor_state.hpp"
 
 namespace aimrt_mujoco_sim::mujoco_sim_module::publisher {
 class TouchSensorRos2Publisher : public PublisherBase {
@@ -76,11 +76,11 @@ class TouchSensorRos2Publisher : public PublisherBase {
   double avg_interval_base_ = 1.0;
   double avg_interval_ = 0;
 
-  uint32_t touch_group_num_ = 0;
+  uint32_t touch_sensor_group_num_ = 0;
   uint32_t counter_ = 0;
 
   std::vector<SensorAddrGroup> sensor_addr_group_vec_;
   std::vector<std::string> name_vec_;
-  std::vector<uint32_t> touch_num_vec_;
+  std::vector<uint32_t> touch_sensor_num_vec_;
 };
 }  // namespace aimrt_mujoco_sim::mujoco_sim_module::publisher

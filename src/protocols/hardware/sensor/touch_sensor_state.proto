@@ -7,15 +7,19 @@ import "header.proto";
 
 package aimrt.protocols.sensor;
 
-// Represents the pressure readings from a single touch sensor.
-message SingleTouchState {
+/**
+ * @brief Represents the pressure readings from a single touch sensor.
+ */
+message SingleTouchSensorState {
   // An array of int32 values representing the pressure readings
   // from individual sensing elements on the touch sensor.
   repeated int32 pressure = 1;
 }
 
-// Represents the state of multiple touch sensors.
-message TouchState {
+/**
+ * @brief Represents the state of multiple touch sensors.
+ */
+message TouchSensorState {
   // Common header containing timestamp and other metadata.
   aimrt.protocols.common.Header header = 1;
 
@@ -23,5 +27,5 @@ message TouchState {
   repeated string names = 2;
 
   // An array of SingleTouchState messages, each representing the state of a single touch sensor.
-  repeated SingleTouchState states = 3;
+  repeated SingleTouchSensorState states = 3;
 }

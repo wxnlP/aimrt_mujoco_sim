@@ -5,13 +5,13 @@
 
 #include <vector>
 
-#include "joint_pd.pb.h"
 #include "mujoco_sim_module/global.h"
 #include "mujoco_sim_module/subscriber/subscriber_base.h"
+#include "sensor_ros2/msg/joint_command.hpp"
 
 namespace aimrt_mujoco_sim::mujoco_sim_module::subscriber {
 
-class JointPdActuatorSubscriber : public SubscriberBase {
+class JointActuatorRos2Subscriber : public SubscriberBase {
  public:
   struct Options {
     struct Joint {
@@ -24,14 +24,14 @@ class JointPdActuatorSubscriber : public SubscriberBase {
   };
 
  public:
-  JointPdActuatorSubscriber() {}
-  ~JointPdActuatorSubscriber() override = default;
+  JointActuatorRos2Subscriber() {}
+  ~JointActuatorRos2Subscriber() override = default;
 
   void Initialize(YAML::Node options_node) override;
   void Start() override { stop_flag_ = false; }
   void Shutdown() override { stop_flag_ = true; }
 
-  std::string_view Type() const noexcept override { return "joint_pd_actuator"; }
+  std::string_view Type() const noexcept override { return "joint_actuator_ros2"; }
 
   void SetMj(mjModel* m, mjData* d) override {
     m_ = m;
@@ -44,7 +44,7 @@ class JointPdActuatorSubscriber : public SubscriberBase {
   void ApplyCtrlData() override;
 
  private:
-  void EventHandle(const std::shared_ptr<const aimrt::protocols::sensor::JointPdState>& commands);
+  void EventHandle(const std::shared_ptr<const sensor_ros2::msg::JointCommand>& commands);
 
   void RegisterActuatorAddr();
 

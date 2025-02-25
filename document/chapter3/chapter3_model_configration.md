@@ -1,5 +1,5 @@
 # 第3章 仿真配置
-AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整个机器人结构（xml 配置文件）以及通信行为（yaml 配置文件）， 即可实现机器人仿真。本章将详细介绍 AimRT_Mujoco_Sim 的模型配置和通信配置。
+AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整个机器人结构（xml 配置文件）以及通信行为（yaml 配置文件）， 即可启动机器人仿真模块， 实现和其他模块的通信，以及机器人仿真。本章将详细介绍 AimRT_Mujoco_Sim 的模型配置和通信配置。
 
 ## 3.1 模型配置（.xml）
 模型配置（.xml）：描述机器人模型的结构、关节、传感器、驱动器等信息。在项目根目录下的`./src/examples/XXX/install/linux/bin/cfg/model`文件夹下。
@@ -167,4 +167,30 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
           bind_framequat: test-orientation
           bind_gyro: test-angular-velocity
           bind_accelerometer: test-linear-acceleration
+```
+
+#### touch 类传感器选项（touch_sensor）
+
+| 节点   | 类型  | 是否可选 | 默认值 | 作用                                    |
+| ------ | ----- | -------- | ------ | --------------------------------------- |
+| name   | array | 必选     | []     | IMU 传感器在 xml 中绑定的 site 名称     |
+| states | array | 可选     | []     | 绑定在 xml 中测量姿态四元数的传感器名称 |
+
+使用注意点如下：
+
+```xml
+  <!-- xml 示例： -->
+  <sensor>
+
+  </sensor>
+```
+```yaml
+  # yaml 示例：
+  publisher_options:
+    - topic: /test/imu_state
+      frequency: 1000
+      executor: work_thread_pool
+      type: touch_sensor
+      options:
+
 ```

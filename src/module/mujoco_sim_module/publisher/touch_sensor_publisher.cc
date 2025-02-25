@@ -77,7 +77,7 @@ void TouchSensorPublisher::Initialize(YAML::Node options_node) {
 
   options_node = options_;
 
-  bool ret = aimrt::channel::RegisterPublishType<aimrt::protocols::sensor::TouchState>(publisher_);
+  bool ret = aimrt::channel::RegisterPublishType<aimrt::protocols::sensor::TouchSensorState>(publisher_);
 
   AIMRT_CHECK_ERROR_THROW(ret, "Register touch sensor publish type failed.");
 }
@@ -87,12 +87,12 @@ void TouchSensorPublisher::PublishSensorData() {
 
   if (counter_++ < avg_interval_) return;
 
-  std::unique_ptr<SensorStateGroup[]> state_array(new SensorStateGroup[touch_group_num_]);
+  std::unique_ptr<SensorStateGroup[]> state_array(new SensorStateGroup[touch_sensor_group_num_]);
 
   // if not define specific sensor , its value is set to 0.0
-  for (size_t i = 0; i < touch_group_num_; i++) {
+  for (size_t i = 0; i < touch_sensor_group_num_; i++) {
     const auto& addr_vec = sensor_addr_group_vec_[i].addr_vec;
-    state_array[i].state_vec.reserve(touch_num_vec_[i]);
+    state_array[i].state_vec.reserve(touch_sensor_num_vec_[i]);
     std::transform(addr_vec.begin(),
                    addr_vec.end(),
                    state_array[i].state_vec.begin(),
@@ -100,20 +100,20 @@ void TouchSensorPublisher::PublishSensorData() {
   }
 
   executor_.Execute([this, state_array = std::move(state_array)]() {
-    aimrt::protocols::sensor::TouchState state;
+    aimrt::protocols::sensor::TouchSensorState state;
 
     auto timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     state.mutable_header()->set_time_stamp(timestamp);
     state.mutable_header()->set_frame_id("touch_sensor");
 
-    state.mutable_names()->Reserve(touch_group_num_);
-    state.mutable_states()->Reserve(touch_group_num_);
+    state.mutable_names()->Reserve(touch_sensor_group_num_);
+    state.mutable_states()->Reserve(touch_sensor_group_num_);
 
-    for (int i = 0; i < touch_group_num_; ++i) {
+    for (int i = 0; i < touch_sensor_group_num_; ++i) {
       state.add_names(name_vec_[i]);
       auto* states = state.add_states();
-      states->mutable_pressure()->Reserve(touch_num_vec_[i]);
-      for (int j = 0; j < touch_num_vec_[i]; ++j) {
+      states->mutable_pressure()->Reserve(touch_sensor_num_vec_[i]);
+      for (int j = 0; j < touch_sensor_num_vec_[i]; ++j) {
         states->add_pressure(state_array[i].state_vec[j]);
       }
     }
@@ -131,9 +131,9 @@ void TouchSensorPublisher::PublishSensorData() {
 }
 
 void TouchSensorPublisher::RegisterSensorAddr() {
-  touch_group_num_ = options_.names.size();
+  touch_sensor_group_num_ = options_.names.size();
 
-  for (size_t index = 0; index < touch_group_num_; ++index) {
+  for (size_t index = 0; index < touch_sensor_group_num_; ++index) {
     name_vec_.emplace_back(options_.names[index]);
 
     std::vector<int32_t> addr_vec;
@@ -144,7 +144,7 @@ void TouchSensorPublisher::RegisterSensorAddr() {
                      return GetSensorAddr(m_, state.bind_touch_sensor);
                    });
 
-    touch_num_vec_.emplace_back(addr_vec.size());
+    touch_sensor_num_vec_.emplace_back(addr_vec.size());
 
     sensor_addr_group_vec_.emplace_back(SensorAddrGroup{
         .addr_vec = std::move(addr_vec)});
