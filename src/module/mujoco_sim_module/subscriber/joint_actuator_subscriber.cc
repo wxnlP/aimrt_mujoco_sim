@@ -101,9 +101,10 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
       new_command_array[ii] = command.velocity();
     } else {
       // motor
-      int32_t actuator_addr = actuator_addr_vec_[ii];
-      double state_posiotin = d_->qpos[actuator_addr];
-      double state_velocity = d_->qvel[actuator_addr];
+      int joint_id = m_->actuator_trnid[actuator_addr_vec_[ii] * 2];
+      double state_posiotin = d_->qpos[m_->jnt_qposadr[joint_id]];
+      double state_velocity = d_->qvel[m_->jnt_dofadr[joint_id]];
+
       new_command_array[ii] = command.effort() +
                               command.stiffness() * (command.position() - state_posiotin) +
                               command.damping() * (command.velocity() - state_velocity);
