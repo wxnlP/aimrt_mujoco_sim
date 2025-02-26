@@ -50,8 +50,8 @@ class JointActuatorRos2Subscriber : public SubscriberBase {
 
  private:
   struct ActuatorBindJointSensorAddr {
-    mjtNum pos_addr;
-    mjtNum vel_addr;
+    int32_t pos_addr;
+    int32_t vel_addr;
   };
 
   Options options_;
