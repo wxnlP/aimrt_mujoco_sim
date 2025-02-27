@@ -34,7 +34,7 @@ if(AIMRT_MUJOCO_SIM_INSTALL)
   install(
     TARGETS ${CUR_TARGET_NAME}
     EXPORT ${INSTALL_CONFIG_NAME}
-    LIBRARY DESTINATION bin)
+    LIBRARY DESTINATION lib)
 endif()
 
 # Set misc of target
