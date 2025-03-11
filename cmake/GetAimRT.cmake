@@ -6,7 +6,7 @@ include(FetchContent)
 message(STATUS "get aimrt ...")
 
 set(aimrt_DOWNLOAD_URL
-    "https://github.com/AimRT/AimRT.git"
+    "https://github.com/AimRT/AimRT/archive/v0.10.0-rc1.tar.gz"
     CACHE STRING "")
 
 if(aimrt_LOCAL_SOURCE)
@@ -16,7 +16,8 @@ if(aimrt_LOCAL_SOURCE)
     OVERRIDE_FIND_PACKAGE)
 else()
   FetchContent_Declare(
-    aimrt GIT_REPOSITORY ${aimrt_DOWNLOAD_URL} GIT_TAG "main"
+    aimrt
+    URL ${aimrt_DOWNLOAD_URL}
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     OVERRIDE_FIND_PACKAGE)
 endif()
