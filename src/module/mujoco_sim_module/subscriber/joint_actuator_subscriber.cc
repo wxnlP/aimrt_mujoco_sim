@@ -87,26 +87,28 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
     const auto& joint_options = options_.joints[ii];
     const auto& command = commands->joints()[ii];
 
-    if (std::ranges::find(joint_names_vec_, command.name()) == joint_names_vec_.end()) [[unlikely]] {
+    auto itr = std::ranges::find(joint_names_vec_, command.name());
+    if (itr == joint_names_vec_.end()) [[unlikely]] {
       AIMRT_WARN("Invalid msg for topic '{}', msg: {}",
                  subscriber_.GetTopic(), aimrt::Pb2CompactJson(*commands));
 
       delete[] new_command_array;
       return;
     }
+    uint32_t joint_idx = std::distance(joint_names_vec_.begin(), itr);
 
     if (joint_options.bind_actuator_type == "position") {
-      new_command_array[ii] = command.position();
+      new_command_array[joint_idx] = command.position();
     } else if (joint_options.bind_actuator_type == "velocity") {
-      new_command_array[ii] = command.velocity();
+      new_command_array[joint_idx] = command.velocity();
     } else {
       // motor
-      double state_posiotin = d_->qpos[actuator_bind_joint_sensor_addr_vec_[ii].pos_addr];
-      double state_velocity = d_->qvel[actuator_bind_joint_sensor_addr_vec_[ii].vel_addr];
+      double state_posiotin = d_->qpos[actuator_bind_joint_sensor_addr_vec_[joint_idx].pos_addr];
+      double state_velocity = d_->qvel[actuator_bind_joint_sensor_addr_vec_[joint_idx].vel_addr];
 
-      new_command_array[ii] = command.effort() +
-                              command.stiffness() * (command.position() - state_posiotin) +
-                              command.damping() * (command.velocity() - state_velocity);
+      new_command_array[joint_idx] = command.effort() +
+                                     command.stiffness() * (command.position() - state_posiotin) +
+                                     command.damping() * (command.velocity() - state_velocity);
     }
   }
 
