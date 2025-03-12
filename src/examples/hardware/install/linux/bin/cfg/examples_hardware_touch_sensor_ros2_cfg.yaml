@@ -54,28 +54,60 @@ MujocoSimModule:
       type: touch_sensor_ros2
       options:
         names: 
-          - box
-          - base
+          - bottom
+          - top
+          - front
+          - back
+          - right
+          - left
         states:
-          - - bind_site: block_sensor
-              bind_touch_sensor: block_bottom_sensor
-          - - bind_site: sensor_1_1
-              bind_touch_sensor: touch_1_1
-            - bind_site: sensor_1_2
-              bind_touch_sensor: touch_1_2
-            - bind_site: sensor_1_3
-              bind_touch_sensor: touch_1_3
-            - bind_site: sensor_2_1
-              bind_touch_sensor: touch_2_1
-            - bind_site: sensor_2_2
-              bind_touch_sensor: touch_2_2
-            - bind_site: sensor_2_3
-              bind_touch_sensor: touch_2_3
-            - bind_site: sensor_3_1
-              bind_touch_sensor: touch_3_1
-            - bind_site: sensor_3_2
-              bind_touch_sensor: touch_3_2
-            - bind_site: sensor_3_3
-              bind_touch_sensor: touch_3_3
+          - - bind_site: bottom_corner_1
+              bind_touch_sensor: touch_bottom_1
+            - bind_site: bottom_corner_2
+              bind_touch_sensor: touch_bottom_2
+            - bind_site: bottom_corner_3
+              bind_touch_sensor: touch_bottom_3
+            - bind_site: bottom_corner_4
+              bind_touch_sensor: touch_bottom_4
+          - - bind_site: top_corner_1
+              bind_touch_sensor: touch_top_1
+            - bind_site: top_corner_2
+              bind_touch_sensor: touch_top_2
+            - bind_site: top_corner_3
+              bind_touch_sensor: touch_top_3
+            - bind_site: top_corner_4
+              bind_touch_sensor: touch_top_4
+          - - bind_site: front_corner_1
+              bind_touch_sensor: touch_front_1
+            - bind_site: front_corner_2
+              bind_touch_sensor: touch_front_2
+            - bind_site: front_corner_3
+              bind_touch_sensor: touch_front_3
+            - bind_site: front_corner_4
+              bind_touch_sensor: touch_front_4
+          - - bind_site: back_corner_1
+              bind_touch_sensor: touch_back_1
+            - bind_site: back_corner_2
+              bind_touch_sensor: touch_back_2
+            - bind_site: back_corner_3
+              bind_touch_sensor: touch_back_3
+            - bind_site: back_corner_4
+              bind_touch_sensor: touch_back_4
+          - - bind_site: right_corner_1
+              bind_touch_sensor: touch_right_1
+            - bind_site: right_corner_2
+              bind_touch_sensor: touch_right_2
+            - bind_site: right_corner_3
+              bind_touch_sensor: touch_right_3
+            - bind_site: right_corner_4
+              bind_touch_sensor: touch_right_4
+          - - bind_site: left_corner_1
+              bind_touch_sensor: touch_left_1
+            - bind_site: left_corner_2
+              bind_touch_sensor: touch_left_2
+            - bind_site: left_corner_3
+              bind_touch_sensor: touch_left_3
+            - bind_site: left_corner_4
+              bind_touch_sensor: touch_left_4
 
 
