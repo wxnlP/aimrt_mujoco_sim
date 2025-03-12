@@ -44,7 +44,7 @@ aimrt:
 
 # Module custom configuration
 MujocoSimModule:
-  simulation_model_path: ./cfg/model/examples_hardware_touch_sensor_model.xml
+  simulation_model_path: ./cfg/model/examples_hardware_touch_model.xml
   sim_executor: work_thread_pool
   gui_executor: gui_thread
   publisher_options:
@@ -54,14 +54,28 @@ MujocoSimModule:
       type: touch_sensor_ros2
       options:
         names: 
-          - top_ball
-          - bottom_ball
+          - box
+          - base
         states:
-          - - bind_site: touch_sensor_site_1_top
-              bind_touch_sensor: touch_sensor_1_top
-          - - bind_site: touch_sensor_site_1_bottom
-              bind_touch_sensor: touch_sensor_1_bottom
-            - bind_site: touch_sensor_site_2_bottom
-              bind_touch_sensor: touch_sensor_2_bottom
+          - - bind_site: block_sensor
+              bind_touch_sensor: block_bottom_sensor
+          - - bind_site: sensor_1_1
+              bind_touch_sensor: touch_1_1
+            - bind_site: sensor_1_2
+              bind_touch_sensor: touch_1_2
+            - bind_site: sensor_1_3
+              bind_touch_sensor: touch_1_3
+            - bind_site: sensor_2_1
+              bind_touch_sensor: touch_2_1
+            - bind_site: sensor_2_2
+              bind_touch_sensor: touch_2_2
+            - bind_site: sensor_2_3
+              bind_touch_sensor: touch_2_3
+            - bind_site: sensor_3_1
+              bind_touch_sensor: touch_3_1
+            - bind_site: sensor_3_2
+              bind_touch_sensor: touch_3_2
+            - bind_site: sensor_3_3
+              bind_touch_sensor: touch_3_3
 
 
