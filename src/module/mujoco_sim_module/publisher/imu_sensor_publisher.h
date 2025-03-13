@@ -86,7 +86,6 @@ class ImuSensorPublisherBase : public PublisherBase {
   SensorAddrGroup sensor_addr_group_;
 };
 
-#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
 class ImuSensorPublisher : public ImuSensorPublisherBase {
  public:
   ImuSensorPublisher() = default;
@@ -96,7 +95,7 @@ class ImuSensorPublisher : public ImuSensorPublisherBase {
   std::string_view Type() const noexcept override { return "imu_sensor"; }
   void PublishSensorData() override;
 };
-
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
 class ImuSensorRos2Publisher : public ImuSensorPublisherBase {
  public:
   ImuSensorRos2Publisher() = default;
