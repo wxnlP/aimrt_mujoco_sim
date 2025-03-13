@@ -78,7 +78,7 @@ class JointActuatorSubscriber : public JointActuatorSubscriberBase {
   void Initialize(YAML::Node options_node) override;
   std::string_view Type() const noexcept override { return "joint_actuator"; }
 
- protected:
+ private:
   void EventHandle(const std::shared_ptr<const aimrt::protocols::sensor::JointCommand>& commands);
 };
 
@@ -93,7 +93,7 @@ class JointActuatorRos2Subscriber : public JointActuatorSubscriberBase {
 
   std::string_view Type() const noexcept override { return "joint_actuator_ros2"; }
 
- protected:
+ private:
   void EventHandle(const std::shared_ptr<const sensor_ros2::msg::JointCommand>& commands);
 };
 #endif
