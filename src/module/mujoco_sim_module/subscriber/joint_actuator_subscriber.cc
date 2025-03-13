@@ -5,8 +5,8 @@
 
 namespace YAML {
 template <>
-struct convert<aimrt_mujoco_sim::mujoco_sim_module::subscriber::JointActuatorSubscriberBase::Options> {
-  using Options = aimrt_mujoco_sim::mujoco_sim_module::subscriber::JointActuatorSubscriberBase::Options;
+struct convert<aimrt_mujoco_sim::mujoco_sim_module::subscriber::Options> {
+  using Options = aimrt_mujoco_sim::mujoco_sim_module::subscriber::Options;
   static Node encode(const Options& rhs) {
     Node node;
 
