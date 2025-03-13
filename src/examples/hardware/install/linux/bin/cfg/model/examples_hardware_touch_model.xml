@@ -7,90 +7,55 @@
      <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="1000" height="1000"/>  
      <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/> 
      <material name="incline_material" rgba="0.5 0.5 0.5 1"/>
-     <material name="cube_material" rgba="0.8 0.2 0.2 1"/>
-     <material name="bottom_sensor" rgba="1 0 0 0.7"/>
+     <material name="cube_material" rgba="0.60 0.30 0.20 1"/>
   </asset> 
 
   <worldbody>
    <geom name="floor" pos="0 0 -0.5" size="0 0 1" type="plane" material="groundplane"/>
    <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
     
-    <!-- incline -->
+    <!-- inclined plane -->
     <body name="incline" pos="0 0 -.35">
-      <geom name="incline_plane" type="box" size="1 0.5 0.03" pos="0 0 0" euler="0.3 0 0" material="incline_material"/>
+      <geom name="incline_plane" type="box" size="0.8 0.8 0.03" pos="0 0 0" euler="0.3 0 0" material="incline_material"/>
     </body>
 
-    <body name="cube" pos="0 0 1">
+    <body name="cube" pos="0 0.5 1">
       <joint type="free"/>
-      <geom name="cube_geom" type="box" size="0.1 0.1 0.1" material="cube_material" mass="10"/>
+      <geom name="cube_geom" type="box" size="0.09 0.09 0.09" material="cube_material" mass="10"/>
       
-      <site name="bottom_corner_1" type="sphere" size="0.01" pos="0.1 0.1 -0.1" rgba="0 1 0 1"/> 
-      <site name="bottom_corner_2" type="sphere" size="0.01" pos="0.1 -0.1 -0.1" rgba="0 1 0 1"/> 
-      <site name="bottom_corner_3" type="sphere" size="0.01" pos="-0.1 0.1 -0.1" rgba="0 1 0 1"/> 
-      <site name="bottom_corner_4" type="sphere" size="0.01" pos="-0.1 -0.1 -0.1" rgba="0 1 0 1"/> 
+      <!-- bottom face -->
+      <site name="bottom_face" type="box" size="0.1 0.1 0.001" pos="0 0 -0.1" rgba="0 0 1 0"/>
+      <site name="bottom_indicator" type="cylinder" size="0.015 0.001" pos="0 0 -0.09"  rgba="0 1 0 1"/>
 
-      <site name="top_corner_1" type="sphere" size="0.01" pos="0.1 0.1 0.1" rgba="0 1 0 1"/> 
-      <site name="top_corner_2" type="sphere" size="0.01" pos="0.1 -0.1 0.1" rgba="0 1 0 1"/> 
-      <site name="top_corner_3" type="sphere" size="0.01" pos="-0.1 0.1 0.1" rgba="0 1 0 1"/> 
-      <site name="top_corner_4" type="sphere" size="0.01" pos="-0.1 -0.1 0.1" rgba="0 1 0 1"/> 
+      <!-- top face -->
+      <site name="top_face" type="box" size="0.1 0.1 0.001" pos="0 0 0.1" rgba="0 0 1 0"/>
+      <geom name="top_indicator" type="cylinder" size="0.015 0.001" pos="0 0 0.09"  rgba="0 1 0 1"/>
 
-      <site name="front_corner_1" type="sphere" size="0.01" pos="0.1 0.1 0.1" rgba="0 1 0 1"/> 
-      <site name="front_corner_2" type="sphere" size="0.01" pos="0.1 0.1 -0.1" rgba="0 1 0 1"/> 
-      <site name="front_corner_3" type="sphere" size="0.01" pos="-0.1 0.1 0.1" rgba="0 1 0 1"/> 
-      <site name="front_corner_4" type="sphere" size="0.01" pos="-0.1 0.1 -0.1" rgba="0 1 0 1"/> 
-      
-      <site name="back_corner_1" type="sphere" size="0.01" pos="0.1 -0.1 0.1" rgba="0 1 0 1"/> 
-      <site name="back_corner_2" type="sphere" size="0.01" pos="0.1 -0.1 -0.1" rgba="0 1 0 1"/> 
-      <site name="back_corner_3" type="sphere" size="0.01" pos="-0.1 -0.1 0.1" rgba="0 1 0 1"/> 
-      <site name="back_corner_4" type="sphere" size="0.01" pos="-0.1 -0.1 -0.1" rgba="0 1 0 1"/> 
-      
-      <site name="right_corner_1" type="sphere" size="0.01" pos="0.1 0.1 0.1" rgba="0 1 0 1"/> 
-      <site name="right_corner_2" type="sphere" size="0.01" pos="0.1 -0.1 0.1" rgba="0 1 0 1"/> 
-      <site name="right_corner_3" type="sphere" size="0.01" pos="0.1 0.1 -0.1" rgba="0 1 0 1"/> 
-      <site name="right_corner_4" type="sphere" size="0.01" pos="0.1 -0.1 -0.1" rgba="0 1 0 1"/> 
-      
-      <site name="left_corner_1" type="sphere" size="0.01" pos="-0.1 0.1 0.1" rgba="0 1 0 1"/> 
-      <site name="left_corner_2" type="sphere" size="0.01" pos="-0.1 -0.1 0.1" rgba="0 1 0 1"/> 
-      <site name="left_corner_3" type="sphere" size="0.01" pos="-0.1 0.1 -0.1" rgba="0 1 0 1"/> 
-      <site name="left_corner_4" type="sphere" size="0.01" pos="-0.1 -0.1 -0.1" rgba="0 1 0 1"/> 
+      <!-- front face -->
+      <site name="front_face" type="box" size="0.1 0.001 0.1" pos="0 0.1 0" rgba="0 0 1 0"/>
+      <geom name="front_indicator" type="cylinder" size="0.015 0.001" pos="0 0.09 0" euler="1.57 0 0" rgba="0 1 0 1"/>
+
+      <!-- back face -->
+      <site name="back_face" type="box" size="0.1 0.001 0.1" pos="0 -0.1 0" rgba="0 0 1 0"/>
+      <geom name="back_indicator" type="cylinder" size="0.015 0.001" pos="0 -0.09 0" euler="1.57 0 0" rgba="0 1 0 1"/>
+
+      <!-- right face -->
+      <site name="right_face" type="box" size="0.001 0.1 0.1" pos="0.1 0 0" rgba="0 0 1 0"/>
+      <geom name="right_indicator" type="cylinder" size="0.015 0.001" pos="0.09 0 0" euler="0 1.57 0" rgba="0 1 0 1"/>
+
+      <!-- left face -->
+      <site name="left_face" type="box" size="0.001 0.1 0.1" pos="-0.1 0 0" rgba="0 0 1 0"/>
+      <geom name="left_indicator" type="cylinder" size="0.015 0.001" pos="-0.09 0 0" euler="0 1.57 0" rgba="0 1 0 1"/>
     </body>
   </worldbody>
     
   <sensor>
-      <!-- bottom sensor -->
-      <touch name="touch_bottom_1" site="bottom_corner_1"/>
-      <touch name="touch_bottom_2" site="bottom_corner_2"/>
-      <touch name="touch_bottom_3" site="bottom_corner_3"/>
-      <touch name="touch_bottom_4" site="bottom_corner_4"/>
-      
-      <!-- top sensor -->
-      <touch name="touch_top_1" site="top_corner_1"/>
-      <touch name="touch_top_2" site="top_corner_2"/>
-      <touch name="touch_top_3" site="top_corner_3"/>
-      <touch name="touch_top_4" site="top_corner_4"/>
-      
-      <!-- front sensor -->
-      <touch name="touch_front_1" site="front_corner_1"/>
-      <touch name="touch_front_2" site="front_corner_2"/>
-      <touch name="touch_front_3" site="front_corner_3"/>
-      <touch name="touch_front_4" site="front_corner_4"/>
-      
-      <!-- back sensor -->
-      <touch name="touch_back_1" site="back_corner_1"/>
-      <touch name="touch_back_2" site="back_corner_2"/>
-      <touch name="touch_back_3" site="back_corner_3"/>
-      <touch name="touch_back_4" site="back_corner_4"/>
-      
-      <!-- right sensor -->
-      <touch name="touch_right_1" site="right_corner_1"/>
-      <touch name="touch_right_2" site="right_corner_2"/>
-      <touch name="touch_right_3" site="right_corner_3"/>
-      <touch name="touch_right_4" site="right_corner_4"/>
-      
-      <!-- left sensor -->
-      <touch name="touch_left_1" site="left_corner_1"/>
-      <touch name="touch_left_2" site="left_corner_2"/>
-      <touch name="touch_left_3" site="left_corner_3"/>
-      <touch name="touch_left_4" site="left_corner_4"/>
+    <!-- 6 touch sensors for the 6 faces -->
+    <touch name="touch_bottom" site="bottom_face"/>
+    <touch name="touch_top" site="top_face"/>
+    <touch name="touch_front" site="front_face"/>
+    <touch name="touch_back" site="back_face"/>
+    <touch name="touch_right" site="right_face"/>
+    <touch name="touch_left" site="left_face"/>
   </sensor>
 </mujoco>
