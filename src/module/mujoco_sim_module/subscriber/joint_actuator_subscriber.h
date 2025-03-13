@@ -18,18 +18,18 @@
 #endif
 
 namespace aimrt_mujoco_sim::mujoco_sim_module::subscriber {
-struct Options {
-  struct Joint {
-    std::string name;
-    std::string bind_joint;
-    std::string bind_actuator_type;
-    std::string bind_actuator_name;
-  };
-  std::vector<Joint> joints;
-};
-
 class JointActuatorSubscriberBase : public SubscriberBase {
  public:
+  struct Options {
+    struct Joint {
+      std::string name;
+      std::string bind_joint;
+      std::string bind_actuator_type;
+      std::string bind_actuator_name;
+    };
+    std::vector<Joint> joints;
+  };
+
  public:
   JointActuatorSubscriberBase() = default;
   virtual ~JointActuatorSubscriberBase() = default;
