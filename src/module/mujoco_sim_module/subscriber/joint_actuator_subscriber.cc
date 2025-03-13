@@ -82,19 +82,22 @@ void JointActuatorSubscriberBase::RegisterActuatorAddr() {
   joint_num_ = actuator_addr_vec_.size();
 }
 
-void JointActuatorSubscriber::Initialize(YAML::Node options_node) {
+void JointActuatorSubscriberBase::InitializeBase(YAML::Node options_node) {
   if (options_node && !options_node.IsNull())
     options_ = options_node.as<Options>();
 
   RegisterActuatorAddr();
 
   options_node = options_;
+}
 
-  bool ret = aimrt::channel::Subscribe<aimrt::protocols::sensor::JointCommand>(
-      subscriber_,
-      std::bind(&JointActuatorSubscriber::EventHandle, this, std::placeholders::_1));
+void JointActuatorSubscriber::Initialize(YAML::Node options_node) {
+  InitializeBase(options_node);
 
-  AIMRT_CHECK_ERROR_THROW(ret, "Subscribe failed.");
+  AIMRT_CHECK_ERROR_THROW(aimrt::channel::Subscribe<aimrt::protocols::sensor::JointCommand>(
+                              subscriber_,
+                              std::bind(&JointActuatorSubscriber::EventHandle, this, std::placeholders::_1)),
+                          "Subscribe failed.");
 }
 
 void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::protocols::sensor::JointCommand>& commands) {
@@ -139,18 +142,12 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
 
 void JointActuatorRos2Subscriber::Initialize(YAML::Node options_node) {
-  if (options_node && !options_node.IsNull())
-    options_ = options_node.as<Options>();
+  InitializeBase(options_node);
 
-  RegisterActuatorAddr();
-
-  options_node = options_;
-
-  bool ret = aimrt::channel::Subscribe<sensor_ros2::msg::JointCommand>(
-      subscriber_,
-      std::bind(&JointActuatorRos2Subscriber::EventHandle, this, std::placeholders::_1));
-
-  AIMRT_CHECK_ERROR_THROW(ret, "Subscribe failed.");
+  AIMRT_CHECK_ERROR_THROW(aimrt::channel::Subscribe<sensor_ros2::msg::JointCommand>(
+                              subscriber_,
+                              std::bind(&JointActuatorRos2Subscriber::EventHandle, this, std::placeholders::_1)),
+                          "Subscribe failed.");
 }
 void JointActuatorRos2Subscriber::EventHandle(const std::shared_ptr<const sensor_ros2::msg::JointCommand>& commands) {
   if (stop_flag_) [[unlikely]]

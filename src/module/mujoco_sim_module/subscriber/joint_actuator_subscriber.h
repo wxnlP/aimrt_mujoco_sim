@@ -46,6 +46,7 @@ class JointActuatorSubscriberBase : public SubscriberBase {
   void ApplyCtrlData() override;
 
  protected:
+  void InitializeBase(YAML::Node options_node);
   void RegisterActuatorAddr();
 
  protected:
@@ -69,7 +70,6 @@ class JointActuatorSubscriberBase : public SubscriberBase {
   std::vector<ActuatorBindJointSensorAddr> actuator_bind_joint_sensor_addr_vec_;
 };
 
-//--------------------------------------------------------------------------------------------
 class JointActuatorSubscriber : public JointActuatorSubscriberBase {
  public:
   JointActuatorSubscriber() = default;
@@ -82,7 +82,6 @@ class JointActuatorSubscriber : public JointActuatorSubscriberBase {
   void EventHandle(const std::shared_ptr<const aimrt::protocols::sensor::JointCommand>& commands);
 };
 
-//--------------------------------------------------------------------------------------------
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
 class JointActuatorRos2Subscriber : public JointActuatorSubscriberBase {
  public:
