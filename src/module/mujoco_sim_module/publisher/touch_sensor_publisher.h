@@ -29,7 +29,7 @@ class TouchSensorPublisherBase : public PublisherBase {
 
  public:
   TouchSensorPublisherBase() = default;
-  ~TouchSensorPublisherBase() override = default;
+  virtual ~TouchSensorPublisherBase() override = default;
 
   virtual void Initialize(YAML::Node options_node) = 0;
   virtual std::string_view Type() const noexcept override = 0;

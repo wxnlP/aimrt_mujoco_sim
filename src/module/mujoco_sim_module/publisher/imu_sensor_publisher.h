@@ -28,7 +28,7 @@ class ImuSensorPublisherBase : public PublisherBase {
 
  public:
   ImuSensorPublisherBase() = default;
-  ~ImuSensorPublisherBase() override = default;
+  virtual ~ImuSensorPublisherBase() override = default;
 
   virtual void Initialize(YAML::Node options_node) = 0;
   virtual std::string_view Type() const noexcept override = 0;
