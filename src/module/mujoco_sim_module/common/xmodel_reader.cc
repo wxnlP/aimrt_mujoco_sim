@@ -4,76 +4,47 @@
 #include "mujoco_sim_module/common/xmodel_reader.h"
 
 namespace aimrt_mujoco_sim::mujoco_sim_module::common {
-std::optional<std::string> GetJointvelNameByJointName(const mjModel* m, std::string_view joint_name) {
+std::optional<int32_t> GetJointSensorIdByJointName(const mjModel* m, std::string_view joint_name, mjtSensor sensor_type) {
   int32_t jointId = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
   if (jointId < 0) return std::nullopt;
 
   for (int32_t i = 0; i < m->nsensor; i++) {
-    if (m->sensor_type[i] == mjSENS_JOINTVEL && m->sensor_objid[i] == jointId) {
-      return mj_id2name(m, mjOBJ_SENSOR, i);
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<std::string> GetJointposNameByJointName(const mjModel* m, std::string_view joint_name) {
-  int32_t jointId = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
-  if (jointId < 0) return std::nullopt;
-
-  for (int32_t i = 0; i < m->nsensor; i++) {
-    if (m->sensor_type[i] == mjSENS_JOINTPOS && m->sensor_objid[i] == jointId) {
-      return mj_id2name(m, mjOBJ_SENSOR, i);
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<std::string> GetJointactfrcNameByJointName(const mjModel* m, std::string_view joint_name) {
-  int32_t jointId = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
-  if (jointId < 0) return std::nullopt;
-
-  for (int32_t i = 0; i < m->nsensor; i++) {
-    if (m->sensor_type[i] == mjSENS_JOINTACTFRC && m->sensor_objid[i] == jointId) {
-      return mj_id2name(m, mjOBJ_SENSOR, i);
+    if (m->sensor_type[i] == sensor_type && m->sensor_objid[i] == jointId) {
+      return i;
     }
   }
   return std::nullopt;
 }
 
 std::optional<int32_t> GetJointvelIdByJointName(const mjModel* m, std::string_view joint_name) {
-  int32_t jointId = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
-  if (jointId < 0) return std::nullopt;
-
-  for (int32_t i = 0; i < m->nsensor; i++) {
-    if (m->sensor_type[i] == mjSENS_JOINTVEL && m->sensor_objid[i] == jointId) {
-      return i;
-    }
-  }
-  return std::nullopt;
+  return GetJointSensorIdByJointName(m, joint_name, mjSENS_JOINTVEL);
 }
 
 std::optional<int32_t> GetJointposIdByJointName(const mjModel* m, std::string_view joint_name) {
-  int32_t jointId = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
-  if (jointId < 0) return std::nullopt;
+  return GetJointSensorIdByJointName(m, joint_name, mjSENS_JOINTPOS);
+}
 
-  for (int32_t i = 0; i < m->nsensor; i++) {
-    if (m->sensor_type[i] == mjSENS_JOINTPOS && m->sensor_objid[i] == jointId) {
-      return i;
-    }
+std::optional<int32_t> GetJointactfrcIdByJointName(const mjModel* m, std::string_view joint_name) {
+  return GetJointSensorIdByJointName(m, joint_name, mjSENS_JOINTACTFRC);
+}
+
+std::optional<std::string> GetJointSensorNameByJointName(const mjModel* m, std::string_view joint_name, mjtSensor sensor_type) {
+  if (auto sensor_id = GetJointSensorIdByJointName(m, joint_name, sensor_type)) {
+    return mj_id2name(m, mjOBJ_SENSOR, *sensor_id);
   }
   return std::nullopt;
 }
 
-std::optional<int32_t> GetJointactfrcIdByJointName(const mjModel* m, std::string_view joint_name) {
-  int32_t jointId = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
-  if (jointId < 0) return std::nullopt;
+std::optional<std::string> GetJointvelNameByJointName(const mjModel* m, std::string_view joint_name) {
+  return GetJointSensorNameByJointName(m, joint_name, mjSENS_JOINTVEL);
+}
 
-  for (int32_t i = 0; i < m->nsensor; i++) {
-    if (m->sensor_type[i] == mjSENS_JOINTACTFRC && m->sensor_objid[i] == jointId) {
-      return i;
-    }
-  }
-  return std::nullopt;
+std::optional<std::string> GetJointposNameByJointName(const mjModel* m, std::string_view joint_name) {
+  return GetJointSensorNameByJointName(m, joint_name, mjSENS_JOINTPOS);
+}
+
+std::optional<std::string> GetJointactfrcNameByJointName(const mjModel* m, std::string_view joint_name) {
+  return GetJointSensorNameByJointName(m, joint_name, mjSENS_JOINTACTFRC);
 }
 
 std::optional<int32_t> GetJointActIdByJointName(const mjModel* m, std::string_view joint_name) {
