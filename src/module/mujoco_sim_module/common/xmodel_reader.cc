@@ -8,7 +8,7 @@ namespace aimrt_mujoco_sim::mujoco_sim_module::common {
 std::optional<int32_t> GetJointSensorIdByJointName(const mjModel* m, std::string_view joint_name, mjtSensor sensor_type) {
   int32_t jointId = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
   if (jointId < 0) {
-    AIMRT_ERROR_THROW("Invalid joint name: {}.", joint_name);
+    AIMRT_ERROR_THROW("Invalid joint name: {}, cannot find a joint sensor.", joint_name);
     return std::nullopt;
   }
 
@@ -34,7 +34,7 @@ std::optional<int32_t> GetJointactfrcIdByJointName(const mjModel* m, std::string
 
 std::optional<std::string> GetJointSensorNameByJointName(const mjModel* m, std::string_view joint_name, mjtSensor sensor_type) {
   if (auto sensor_id = GetJointSensorIdByJointName(m, joint_name, sensor_type)) {
-    return mj_id2name(m, mjOBJ_SENSOR, *sensor_id);
+    return mj_id2name(m, mjOBJ_SENSOR, sensor_id.value_or(-1));
   }
   return std::nullopt;
 }
@@ -54,7 +54,7 @@ std::optional<std::string> GetJointactfrcNameByJointName(const mjModel* m, std::
 std::optional<int32_t> GetJointActIdByJointName(const mjModel* m, std::string_view joint_name) {
   int32_t joint_id = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
   if (joint_id < 0) {
-    AIMRT_ERROR_THROW("Invalid joint name: {}.", joint_name);
+    AIMRT_ERROR_THROW("Invalid joint name: {}, cannot find a joint actuator.", joint_name);
     return std::nullopt;
   }
 
@@ -67,10 +67,10 @@ std::optional<int32_t> GetJointActIdByJointName(const mjModel* m, std::string_vi
 }
 
 std::optional<std::string> GetJointActNameByJointName(const mjModel* m, std::string_view joint_name) {
-  int32_t actuatorId = GetJointActIdByJointName(m, joint_name.data()).value_or(-1);
-  if (actuatorId < 0) return std::nullopt;
-
-  return mj_id2name(m, mjOBJ_ACTUATOR, actuatorId);
+  if (auto actuator_id = GetJointActIdByJointName(m, joint_name.data())) {
+    return mj_id2name(m, mjOBJ_ACTUATOR, actuator_id.value_or(-1));
+  }
+  return std::nullopt;
 }
 
 std::optional<std::string> GetJointActTypeByJointName(const mjModel* m, std::string_view joint_name) {
@@ -115,6 +115,8 @@ std::optional<std::string> GetJointActTypeByJointName(const mjModel* m, std::str
 }
 
 std::optional<int32_t> GetSensorIdBySensorName(const mjModel* m, std::string_view sensor_name) {
+  if (sensor_name.empty()) return std::nullopt;
+
   int32_t sensor_id = mj_name2id(m, mjOBJ_SENSOR, sensor_name.data());
   if (sensor_id < 0) {
     AIMRT_ERROR_THROW("Invalid sensor name: {}.", sensor_name);

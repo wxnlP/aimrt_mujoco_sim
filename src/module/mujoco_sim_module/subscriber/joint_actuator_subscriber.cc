@@ -60,8 +60,6 @@ void JointActuatorSubscriberBase::ApplyCtrlData() {
 void JointActuatorSubscriberBase::RegisterActuatorAddr() {
   for (auto const& joint : options_.joints) {
     int32_t actuator_id = common::GetJointActIdByJointName(m_, joint.bind_joint).value_or(-1);
-    AIMRT_CHECK_ERROR_THROW(actuator_id >= 0, "Joint actuator id for joint '{}' is not found.",
-                            joint.bind_joint);
 
     actuator_addr_vec_.emplace_back(actuator_id);
     joint_names_vec_.emplace_back(joint.name);
