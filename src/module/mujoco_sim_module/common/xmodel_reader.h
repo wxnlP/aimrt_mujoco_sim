@@ -9,6 +9,8 @@
 
 namespace aimrt_mujoco_sim::mujoco_sim_module::common {
 // joint sensor
+bool IsJointExist(const mjModel* m, std::string_view joint_name);
+
 std::optional<std::string> GetJointvelNameByJointName(const mjModel* m, std::string_view joint_name);
 std::optional<std::string> GetJointposNameByJointName(const mjModel* m, std::string_view joint_name);
 std::optional<std::string> GetJointactfrcNameByJointName(const mjModel* m, std::string_view joint_name);
