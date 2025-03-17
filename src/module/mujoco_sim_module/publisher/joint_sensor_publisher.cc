@@ -2,6 +2,7 @@
 // All rights reserved.
 
 #include "mujoco_sim_module/publisher/joint_sensor_publisher.h"
+#include "mujoco_sim_module/common/xmodel_reader.h"
 
 namespace YAML {
 template <>
@@ -16,9 +17,6 @@ struct convert<aimrt_mujoco_sim::mujoco_sim_module::publisher ::JointSensorPubli
       Node joint_node;
       joint_node["name"] = joint.name;
       joint_node["bind_joint"] = joint.bind_joint;
-      joint_node["bind_jointpos_sensor"] = joint.bind_jointpos_sensor;
-      joint_node["bind_jointvel_sensor"] = joint.bind_jointvel_sensor;
-      joint_node["bind_jointactuatorfrc_sensor"] = joint.bind_jointactuatorfrc_sensor;
       node["joints"].push_back(joint_node);
     }
 
@@ -31,16 +29,6 @@ struct convert<aimrt_mujoco_sim::mujoco_sim_module::publisher ::JointSensorPubli
         auto joint_node_options = Options::Joint();
         joint_node_options.name = joint_node["name"].as<std::string>();
         joint_node_options.bind_joint = joint_node["bind_joint"].as<std::string>();
-
-        if (joint_node["bind_jointpos_sensor"]) {
-          joint_node_options.bind_jointpos_sensor = joint_node["bind_jointpos_sensor"].as<std::string>();
-        }
-        if (joint_node["bind_jointvel_sensor"]) {
-          joint_node_options.bind_jointvel_sensor = joint_node["bind_jointvel_sensor"].as<std::string>();
-        }
-        if (joint_node["bind_jointactuatorfrc_sensor"]) {
-          joint_node_options.bind_jointactuatorfrc_sensor = joint_node["bind_jointactuatorfrc_sensor"].as<std::string>();
-        }
 
         rhs.joints.emplace_back(std::move(joint_node_options));
       }
@@ -60,9 +48,9 @@ void JointSensorPublisherBase ::SetMj(mjModel* m, mjData* d) {
 void JointSensorPublisherBase::RegisterSensorAddr() {
   for (const auto& joint : options_.joints) {
     sensor_addr_vec_.emplace_back(SensorAddrGroup{
-        .jointpos_addr = GetSensorAddr(m_, joint.bind_jointpos_sensor),
-        .jointvel_addr = GetSensorAddr(m_, joint.bind_jointvel_sensor),
-        .jointactuatorfrc_addr = GetSensorAddr(m_, joint.bind_jointactuatorfrc_sensor)});
+        .jointpos_addr = common::GetJointposIdByJointName(m_, joint.bind_joint).value_or(-1),
+        .jointvel_addr = common::GetJointvelIdByJointName(m_, joint.bind_joint).value_or(-1),
+        .jointactuatorfrc_addr = common::GetJointactfrcIdByJointName(m_, joint.bind_joint).value_or(-1)});
 
     name_vec_.emplace_back(joint.name);
   }

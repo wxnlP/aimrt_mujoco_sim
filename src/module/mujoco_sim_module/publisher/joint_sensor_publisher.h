@@ -23,9 +23,6 @@ class JointSensorPublisherBase : public PublisherBase {
     struct Joint {
       std::string name;
       std::string bind_joint;
-      std::string bind_jointpos_sensor;
-      std::string bind_jointvel_sensor;
-      std::string bind_jointactuatorfrc_sensor;
     };
     std::vector<Joint> joints;
   };
