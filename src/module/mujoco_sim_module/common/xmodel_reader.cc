@@ -41,7 +41,7 @@ std::optional<std::string> GetJointactfrcNameByJointName(const mjModel* m, std::
   return std::nullopt;
 }
 
-std::optional<uint32_t> GetJointvelIdByJointName(const mjModel* m, std::string_view joint_name) {
+std::optional<int32_t> GetJointvelIdByJointName(const mjModel* m, std::string_view joint_name) {
   int32_t jointId = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
   if (jointId < 0) return std::nullopt;
 
@@ -53,7 +53,7 @@ std::optional<uint32_t> GetJointvelIdByJointName(const mjModel* m, std::string_v
   return std::nullopt;
 }
 
-std::optional<uint32_t> GetJointposIdByJointName(const mjModel* m, std::string_view joint_name) {
+std::optional<int32_t> GetJointposIdByJointName(const mjModel* m, std::string_view joint_name) {
   int32_t jointId = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
   if (jointId < 0) return std::nullopt;
 
@@ -65,7 +65,7 @@ std::optional<uint32_t> GetJointposIdByJointName(const mjModel* m, std::string_v
   return std::nullopt;
 }
 
-std::optional<uint32_t> GetJointactfrcIdByJointName(const mjModel* m, std::string_view joint_name) {
+std::optional<int32_t> GetJointactfrcIdByJointName(const mjModel* m, std::string_view joint_name) {
   int32_t jointId = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
   if (jointId < 0) return std::nullopt;
 
@@ -77,7 +77,7 @@ std::optional<uint32_t> GetJointactfrcIdByJointName(const mjModel* m, std::strin
   return std::nullopt;
 }
 
-std::optional<uint32_t> GetJointActIdByJointName(const mjModel* m, std::string_view joint_name) {
+std::optional<int32_t> GetJointActIdByJointName(const mjModel* m, std::string_view joint_name) {
   int32_t jointId = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
   if (jointId < 0) return std::nullopt;
 
