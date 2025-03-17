@@ -2,6 +2,7 @@
 // All rights reserved.
 
 #include "mujoco_sim_module/publisher/imu_sensor_publisher.h"
+#include "mujoco_sim_module/common/xmodel_reader.h"
 
 namespace YAML {
 template <>
@@ -45,9 +46,9 @@ void ImuSensorPublisherBase::SetMj(mjModel* m, mjData* d) {
 }
 
 void ImuSensorPublisherBase::RegisterSensorAddr() {
-  sensor_addr_group_.framequat_addr = GetSensorAddr(m_, options_.bind_framequat),
-  sensor_addr_group_.gyro_addr = GetSensorAddr(m_, options_.bind_gyro),
-  sensor_addr_group_.accelerometer_addr = GetSensorAddr(m_, options_.bind_accelerometer);
+  sensor_addr_group_.framequat_addr = common::GetSensorIdBySensorName(m_, options_.bind_framequat).value_or(-1),
+  sensor_addr_group_.gyro_addr = common::GetSensorIdBySensorName(m_, options_.bind_gyro).value_or(-1),
+  sensor_addr_group_.accelerometer_addr = common::GetSensorIdBySensorName(m_, options_.bind_accelerometer).value_or(-1);
 }
 
 void ImuSensorPublisherBase::CopySensorData(int addr, auto& dest, size_t n) {

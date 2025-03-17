@@ -5,6 +5,7 @@
 
 #include <cstring>
 #include "mujoco/mjmodel.h"
+#include "mujoco_sim_module/global.h"
 #include "simulate.h"
 
 namespace aimrt_mujoco_sim::mujoco_sim_module::common {
@@ -25,5 +26,5 @@ std::optional<std::string> GetJointActNameByJointName(const mjModel* m, std::str
 std::optional<std::string> GetJointActTypeByJointName(const mjModel* m, std::string_view joint_name);
 
 // normal sensor
-
+std::optional<int32_t> GetSensorIdBySensorName(const mjModel* m, std::string_view sensor_name);
 }  // namespace aimrt_mujoco_sim::mujoco_sim_module::common

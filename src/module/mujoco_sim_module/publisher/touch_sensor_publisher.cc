@@ -2,6 +2,8 @@
 // All rights reserved.
 
 #include "mujoco_sim_module/publisher/touch_sensor_publisher.h"
+#include "mujoco_sim_module/common/xmodel_reader.h"
+
 namespace YAML {
 template <>
 struct convert<aimrt_mujoco_sim::mujoco_sim_module::publisher ::TouchSensorPublisherBase::Options> {
@@ -81,7 +83,7 @@ void TouchSensorPublisherBase::RegisterSensorAddr() {
                    options_.states[index].end(),
                    std::back_inserter(addr_vec),
                    [this](const Options::State& state) {
-                     return GetSensorAddr(m_, state.bind_touch_sensor);
+                     return common::GetSensorIdBySensorName(m_, state.bind_touch_sensor).value_or(-1);
                    });
 
     touch_sensor_num_vec_.emplace_back(addr_vec.size());
