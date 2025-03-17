@@ -22,8 +22,6 @@ class JointActuatorSubscriberBase : public SubscriberBase {
     struct Joint {
       std::string name;
       std::string bind_joint;
-      std::string bind_actuator_type;
-      std::string bind_actuator_name;
     };
     std::vector<Joint> joints;
   };
@@ -64,6 +62,7 @@ class JointActuatorSubscriberBase : public SubscriberBase {
   std::vector<size_t> actuator_addr_vec_;
   std::atomic<double*> command_array_{nullptr};
   std::vector<std::string> joint_names_vec_;
+  std::vector<std::string> joint_actuator_type_vec_;
 
   std::vector<ActuatorBindJointSensorAddr> actuator_bind_joint_sensor_addr_vec_;
 };
