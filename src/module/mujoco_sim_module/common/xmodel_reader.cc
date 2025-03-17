@@ -4,14 +4,6 @@
 #include "mujoco_sim_module/common/xmodel_reader.h"
 
 namespace aimrt_mujoco_sim::mujoco_sim_module::common {
-
-bool IsJointExist(const mjModel* m, std::string_view joint_name) {
-  if (!m || !joint_name.data()) return false;
-  int jointId = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
-
-  return (jointId >= 0);
-}
-
 std::optional<std::string> GetJointvelNameByJointName(const mjModel* m, std::string_view joint_name) {
   int32_t jointId = mj_name2id(m, mjOBJ_JOINT, joint_name.data());
   if (jointId < 0) return std::nullopt;
