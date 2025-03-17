@@ -118,7 +118,7 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
       new_command_array[joint_idx] = command.position();
     } else if (joint_actuator_type_vec_[joint_idx] == "velocity") {
       new_command_array[joint_idx] = command.velocity();
-    } else {
+    } else if (joint_actuator_type_vec_[joint_idx] == "motor") {
       // motor
       double state_posiotin = d_->qpos[actuator_bind_joint_sensor_addr_vec_[joint_idx].pos_addr];
       double state_velocity = d_->qvel[actuator_bind_joint_sensor_addr_vec_[joint_idx].vel_addr];
@@ -126,6 +126,8 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
       new_command_array[joint_idx] = command.effort() +
                                      command.stiffness() * (command.position() - state_posiotin) +
                                      command.damping() * (command.velocity() - state_velocity);
+    } else {
+      AIMRT_WARN("Invalid joint actuator type '{}'.", joint_actuator_type_vec_[joint_idx]);
     }
   }
 
@@ -166,7 +168,7 @@ void JointActuatorRos2Subscriber::EventHandle(const std::shared_ptr<const sensor
       new_command_array[joint_idx] = command.position;
     } else if (joint_actuator_type_vec_[joint_idx] == "velocity") {
       new_command_array[joint_idx] = command.velocity;
-    } else {
+    } else if (joint_actuator_type_vec_[joint_idx] == "motor") {
       // motor
       double state_posiotin = d_->qpos[actuator_bind_joint_sensor_addr_vec_[joint_idx].pos_addr];
       double state_velocity = d_->qvel[actuator_bind_joint_sensor_addr_vec_[joint_idx].vel_addr];
@@ -174,6 +176,8 @@ void JointActuatorRos2Subscriber::EventHandle(const std::shared_ptr<const sensor
       new_command_array[joint_idx] = command.effort +
                                      command.stiffness * (command.position - state_posiotin) +
                                      command.damping * (command.velocity - state_velocity);
+    } else {
+      AIMRT_WARN("Invalid joint actuator type '{}'.", joint_actuator_type_vec_[joint_idx]);
     }
   }
 
