@@ -3,12 +3,13 @@
 
 #pragma once
 
-#include "aimrt_module_protobuf_interface/channel/protobuf_channel.h"
-#include "aimrt_module_protobuf_interface/util/protobuf_tools.h"
-#include "joint_state.pb.h"
 #include "mujoco_sim_module/global.h"
 #include "mujoco_sim_module/publisher/publisher_base.h"
 #include "mujoco_sim_module/publisher/utils.h"
+
+#include "aimrt_module_protobuf_interface/channel/protobuf_channel.h"
+#include "aimrt_module_protobuf_interface/util/protobuf_tools.h"
+#include "joint_state.pb.h"
 
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
   #include "aimrt_module_ros2_interface/channel/ros2_channel.h"
@@ -22,9 +23,6 @@ class JointSensorPublisherBase : public PublisherBase {
     struct Joint {
       std::string name;
       std::string bind_joint;
-      std::string bind_jointpos_sensor;
-      std::string bind_jointvel_sensor;
-      std::string bind_jointactuatorfrc_sensor;
     };
     std::vector<Joint> joints;
   };

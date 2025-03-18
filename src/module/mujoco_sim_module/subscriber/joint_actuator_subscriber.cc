@@ -3,6 +3,9 @@
 
 #include "mujoco_sim_module/subscriber/joint_actuator_subscriber.h"
 
+#include <cstddef>
+#include "mujoco_sim_module/common/xmodel_reader.h"
+
 namespace YAML {
 template <>
 struct convert<aimrt_mujoco_sim::mujoco_sim_module::subscriber::JointActuatorSubscriberBase::Options> {
@@ -15,8 +18,6 @@ struct convert<aimrt_mujoco_sim::mujoco_sim_module::subscriber::JointActuatorSub
       Node joint_node;
       joint_node["name"] = joint.name;
       joint_node["bind_joint"] = joint.bind_joint;
-      joint_node["bind_actuator_type"] = joint.bind_actuator_type;
-      joint_node["bind_actuator_name"] = joint.bind_actuator_name;
       node["joints"].push_back(joint_node);
     }
 
@@ -28,14 +29,7 @@ struct convert<aimrt_mujoco_sim::mujoco_sim_module::subscriber::JointActuatorSub
       for (const auto& joint_node : node["joints"]) {
         auto joint_node_options = Options::Joint{
             .name = joint_node["name"].as<std::string>(),
-            .bind_joint = joint_node["bind_joint"].as<std::string>(),
-            .bind_actuator_type = joint_node["bind_actuator_type"].as<std::string>(),
-            .bind_actuator_name = joint_node["bind_actuator_name"].as<std::string>()};
-
-        AIMRT_ASSERT(joint_node_options.bind_actuator_type == "position" ||
-                         joint_node_options.bind_actuator_type == "velocity" ||
-                         joint_node_options.bind_actuator_type == "motor",
-                     "Invalid bind_actuator_type '{}'.", joint_node_options.bind_actuator_type);
+            .bind_joint = joint_node["bind_joint"].as<std::string>()};
 
         rhs.joints.emplace_back(std::move(joint_node_options));
       }
@@ -64,15 +58,14 @@ void JointActuatorSubscriberBase::ApplyCtrlData() {
 }
 
 void JointActuatorSubscriberBase::RegisterActuatorAddr() {
-  uint32_t idx = 0;
   for (auto const& joint : options_.joints) {
-    uint32_t actuator_id = mj_name2id(m_, mjOBJ_ACTUATOR, joint.bind_actuator_name.c_str());
-    AIMRT_CHECK_ERROR_THROW(actuator_id >= 0, "Invalid bind_actuator_name '{}'.", joint.bind_actuator_name);
+    int32_t actuator_id = common::GetJointActIdByJointName(m_, joint.bind_joint).value_or(-1);
 
     actuator_addr_vec_.emplace_back(actuator_id);
     joint_names_vec_.emplace_back(joint.name);
+    joint_actuator_type_vec_.emplace_back(common::GetJointActTypeByJointName(m_, joint.bind_joint).value_or(""));
 
-    auto joint_id = m_->actuator_trnid[actuator_id * 2];
+    auto joint_id = m_->actuator_trnid[static_cast<int32_t>(actuator_id * 2)];
     actuator_bind_joint_sensor_addr_vec_.emplace_back(ActuatorBindJointSensorAddr{
         .pos_addr = m_->jnt_qposadr[joint_id],
         .vel_addr = m_->jnt_dofadr[joint_id],
@@ -120,11 +113,11 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
     }
     uint32_t joint_idx = std::distance(joint_names_vec_.begin(), itr);
 
-    if (joint_options.bind_actuator_type == "position") {
+    if (joint_actuator_type_vec_[joint_idx] == "position") {
       new_command_array[joint_idx] = command.position();
-    } else if (joint_options.bind_actuator_type == "velocity") {
+    } else if (joint_actuator_type_vec_[joint_idx] == "velocity") {
       new_command_array[joint_idx] = command.velocity();
-    } else {
+    } else if (joint_actuator_type_vec_[joint_idx] == "motor") {
       // motor
       double state_posiotin = d_->qpos[actuator_bind_joint_sensor_addr_vec_[joint_idx].pos_addr];
       double state_velocity = d_->qvel[actuator_bind_joint_sensor_addr_vec_[joint_idx].vel_addr];
@@ -132,6 +125,8 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
       new_command_array[joint_idx] = command.effort() +
                                      command.stiffness() * (command.position() - state_posiotin) +
                                      command.damping() * (command.velocity() - state_velocity);
+    } else {
+      AIMRT_WARN("Invalid joint actuator type '{}'.", joint_actuator_type_vec_[joint_idx]);
     }
   }
 
@@ -140,7 +135,6 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
 }
 
 #ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
-
 void JointActuatorRos2Subscriber::Initialize(YAML::Node options_node) {
   InitializeBase(options_node);
 
@@ -169,11 +163,11 @@ void JointActuatorRos2Subscriber::EventHandle(const std::shared_ptr<const sensor
     }
     uint32_t joint_idx = std::distance(joint_names_vec_.begin(), itr);
 
-    if (joint_options.bind_actuator_type == "position") {
+    if (joint_actuator_type_vec_[joint_idx] == "position") {
       new_command_array[joint_idx] = command.position;
-    } else if (joint_options.bind_actuator_type == "velocity") {
+    } else if (joint_actuator_type_vec_[joint_idx] == "velocity") {
       new_command_array[joint_idx] = command.velocity;
-    } else {
+    } else if (joint_actuator_type_vec_[joint_idx] == "motor") {
       // motor
       double state_posiotin = d_->qpos[actuator_bind_joint_sensor_addr_vec_[joint_idx].pos_addr];
       double state_velocity = d_->qvel[actuator_bind_joint_sensor_addr_vec_[joint_idx].vel_addr];
@@ -181,6 +175,8 @@ void JointActuatorRos2Subscriber::EventHandle(const std::shared_ptr<const sensor
       new_command_array[joint_idx] = command.effort +
                                      command.stiffness * (command.position - state_posiotin) +
                                      command.damping * (command.velocity - state_velocity);
+    } else {
+      AIMRT_WARN("Invalid joint actuator type '{}'.", joint_actuator_type_vec_[joint_idx]);
     }
   }
 

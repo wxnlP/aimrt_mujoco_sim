@@ -36,15 +36,4 @@ inline double GetAvgIntervalBase(const uint32_t channel_frq) {
   return avg_interval_base;
 }
 
-[[nodiscard]] inline int32_t GetSensorAddr(const mjModel* m, std::string_view sensor_name) {
-  if (sensor_name.empty()) {
-    return -1;
-  }
-
-  int32_t sensor_id = mj_name2id(m, mjOBJ_SENSOR, sensor_name.data());
-  AIMRT_CHECK_ERROR_THROW(sensor_id >= 0, "Invalid sensor name: {}.", sensor_name);
-
-  return m->sensor_adr[sensor_id];
-}
-
 }  // namespace aimrt_mujoco_sim::mujoco_sim_module::publisher
