@@ -66,9 +66,6 @@ MujocoSimModule:
         joints:
           - name: center_joint
             bind_joint: hinge1
-            bind_actuator_type: motor
-            bind_actuator_name: center_motor
-
   publisher_options:
     - topic: /inverted_pendulum/joint_state
       frequency: 1000
@@ -78,13 +75,8 @@ MujocoSimModule:
         joints:
           - name: center_joint
             bind_joint: hinge1
-            bind_jointpos_sensor: jointpos_hinge1
-            bind_jointvel_sensor: jointvel_hinge1
           - name: edge_joint
             bind_joint: hinge2
-            bind_jointpos_sensor: jointpos_hinge2
-            bind_jointvel_sensor: jointvel_hinge2
-
 PidControlModule:
   topic_name_sub: /inverted_pendulum/joint_state
   topic_name_pub: /inverted_pendulum/joint_command
