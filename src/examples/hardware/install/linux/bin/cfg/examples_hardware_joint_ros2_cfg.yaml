@@ -66,13 +66,8 @@ MujocoSimModule:
         joints:
           - name: shoulder_actuator
             bind_joint: shoulder
-            bind_actuator_type: position
-            bind_actuator_name: shoulder_actuator
           - name: elbow_actuator
             bind_joint: elbow
-            bind_actuator_type: position
-            bind_actuator_name: elbow_actuator
-
   publisher_options:
     - topic: /examples_hardware/joint/joint_state
       frequency: 1
@@ -82,11 +77,5 @@ MujocoSimModule:
         joints:
           - name: shoulder_sensor
             bind_joint: shoulder
-            bind_jointpos_sensor: jointpos_shoulder
-            bind_jointvel_sensor: jointvel_shoulder
-            bind_jointactuatorfrc_sensor: jointactuatorfrc_shoulder
           - name: elbow_sensor
             bind_joint: elbow
-            bind_jointpos_sensor: jointpos_elbow
-            bind_jointvel_sensor: jointvel_elbow
-            bind_jointactuatorfrc_sensor: jointactuatorfrc_elbow
