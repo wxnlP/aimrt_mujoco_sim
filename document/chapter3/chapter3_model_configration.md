@@ -2,7 +2,7 @@
 AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整个机器人结构（xml 配置文件）以及通信行为（yaml 配置文件）， 即可启动机器人仿真模块， 实现和其他模块的通信，以及机器人仿真。本章将详细介绍 AimRT_Mujoco_Sim 的模型配置和通信配置。
 
 ## 3.1 模型配置（.xml）
-模型配置（.xml）：描述机器人模型的结构、关节、传感器、驱动器等信息。在项目根目录下的`./src/examples/XXX/install/linux/bin/cfg/model`文件夹下。
+模型配置（.xml）：描述机器人模型的结构、关节、传感器、驱动器等信息。
 主要用于：
   - 定义机器人的物理结构（连杆、关节）
   - 配置驱动器参数（电机、驱动器）
@@ -12,7 +12,7 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
 具体使用请参考 [mujoco 官方文档](https://mujoco.readthedocs.io/en/stable/XMLreference.html)
 
 ## 3.2 通信配置（.yaml）
-通信配置（.yaml）：配置机器人仿真模块和其他模块的通信。在项目的`./src/examples/inverted_pendulum/install/linux/bin/cfg`文件夹下。
+通信配置（.yaml）：配置机器人仿真模块和其他模块的通信。
 本项目使用 AimRT 作为中间件进行通信。其主要用于：
   - 用来订阅其他控制节点的控制指令，并将控制指令转化为 Mujoco 仿真场景中的动作指令
   - 用来发布 Mujoco 仿真场景中的状态信息，包括机器人当前的位置、姿态、速度等
@@ -56,19 +56,15 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
 ### 3.2.2 驱动器配置
 #### joint 类驱动器选项（joint_actuator & joint_actuator_ros2）
 
-| 节点                         | 类型   | 是否可选 | 默认值 | 作用                                    |
-| ---------------------------- | ------ | -------- | ------ | --------------------------------------- |
-| joints                       | array  | 可选     | []     | joint类驱动器组                         |
-| joints[i].name               | string | 必选     | ""     | 该关节的名称                            |
-| joints[i].bind_joint         | string | 必选     | ""     | 该关节在 xml 中绑定的关节名称           |
-| joints[i].bind_actuator_type | string | 可选     | ""     | 该关节驱动器 在xml 中绑定的驱动器的类型 |
-| joints[i].bind_actuator_name | string | 可选     | ""     | 该关节驱动器在  xml中绑定的驱动器的名称 |
+| 节点                 | 类型   | 是否可选 | 默认值 | 作用                          |
+| -------------------- | ------ | -------- | ------ | ----------------------------- |
+| joints               | array  | 可选     | []     | joint类驱动器组               |
+| joints[i].name       | string | 必选     | ""     | 该关节的名称                  |
+| joints[i].bind_joint | string | 必选     | ""     | 该关节在 xml 中绑定的关节名称 |
 
 使用注意点如下：
 - joints 是一个 array 类型， 其下的每一个元素会通过一个订阅者进行订阅
 - bind_joint 必须与 xml 文件中定义的名称一致， 即和下面代码块中 joint 字段一致
-- bind_actuator_type 必须与 xml 文件中定义的名称一致，即和下面代码块中  的 motor 所处字段一致
-- bind_actuator_name 必须与 xml 文件中定义的名称一致，即和下面代码块中  的 name 字段一致
 ```xml
   <!-- xml 示例： -->
   <actuator>
@@ -80,37 +76,29 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
   # yaml 示例：
   subscriber_options:
     - topic: /examples_hardware/joint/joint_command
-      type: joint_actuator
+      type: joint_actuator  # 或者 joint_actuator_ros2
       options:
         joints:
           - name: shoulder_actuator
             bind_joint: shoulder
-            bind_actuator_type: position
-            bind_actuator_name: shoulder_actuator
           - name: elbow_actuator
             bind_joint: elbow
-            bind_actuator_type: position
-            bind_actuator_name: elbow_actuator
 ```
 
 ### 3.2.3 传感器配置
 #### joint 类传感器选项（joint_sensor & joint_sensor_ros2）
 
-| 节点                                   | 类型   | 是否可选 | 默认值 | 作用                                  |
-| -------------------------------------- | ------ | -------- | ------ | ------------------------------------- |
-| joints                                 | array  | 可选     | []     | joint类传感器组                       |
-| joints[i].name                         | string | 必选     | ""     | 该关节驱动器的名称                    |
-| joints[i].bind_joint                   | string | 必选     | ""     | 该关节驱动器在 xml 中绑定的关节名称   |
-| joints[i].bind_jointpos_sensor         | string | 可选     | ""     | 该关节在 xml 中绑定的位置传感器名称   |
-| joints[i].bind_jointvel_sensor         | string | 可选     | ""     | 该关节在 xml 中绑定的速度传感器名称   |
-| joints[i].bind_jointactuatorfrc_sensor | string | 可选     | ""     | 该关节在 xml 中绑定的执行力传感器名称 |
+| 节点                 | 类型   | 是否可选 | 默认值 | 作用                                |
+| -------------------- | ------ | -------- | ------ | ----------------------------------- |
+| joints               | array  | 可选     | []     | joint类传感器组                     |
+| joints[i].name       | string | 必选     | ""     | 该关节驱动器的名称                  |
+| joints[i].bind_joint | string | 必选     | ""     | 该关节驱动器在 xml 中绑定的关节名称 |
+
 
 使用注意点如下：
 - joints 是一个 array 类型， 其下的每一个元素会通过一个发布者进行发布
 - bind_joint 必须与 xml 文件中定义的名称一致, 即和下面代码块中 joint 字段一致
-- bind_jointpos_sensor 必须与 xml 文件中定义的名称一致， 即和下面代码块中 jointpos 的 name 字段一致
-- bind_jointvel_sensor 必须与 xml 文件中定义的名称一致， 即和下面代码块中 jointvel 的 name 字段一致
-- bind_jointactuatorfrc_sensor 必须与 xml 文件中定义的名称一致， 即和下面代码块中 jointactuatorfrc 的 name 字段一致
+
 ```xml
   <!-- xml 示例： -->
   <sensor> 
@@ -129,19 +117,13 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
     - topic: /examples_hardware/joint/joint_state
       frequency: 1
       executor: work_thread_pool
-      type: joint_sensor
+      type: joint_sensor # 或者 joint_sensor_ros2
       options:
         joints:
           - name: shoulder_sensor
             bind_joint: shoulder
-            bind_jointpos_sensor: jointpos_shoulder
-            bind_jointvel_sensor: jointvel_shoulder
-            bind_jointactuatorfrc_sensor: jointactuatorfrc_shoulder
           - name: elbow_sensor
             bind_joint: elbow
-            bind_jointpos_sensor: jointpos_elbow
-            bind_jointvel_sensor: jointvel_elbow
-            bind_jointactuatorfrc_sensor: jointactuatorfrc_elbow
 ```
 
 #### imu 类传感器选项（imu_sensor & imu_sensor_ros2）
@@ -173,7 +155,7 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
     - topic: /examples_hardware/imu/imu_state
       frequency: 1
       executor: work_thread_pool
-      type: imu_sensor
+      type: imu_sensor # 或者 imu_sensor_ros2
       options:
         bind_site: imu
         bind_framequat: orientation
@@ -207,7 +189,7 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
     - topic: /examples_hardware/touch_sensor/touch_sensor_state
       frequency: 1
       executor: work_thread_pool
-      type: touch_sensor
+      type: touch_sensor # 或者 touch_sensor_ros2
       options:
         names: 
           - top_ball
