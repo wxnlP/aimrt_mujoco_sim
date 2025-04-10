@@ -11,7 +11,7 @@
 * ros2 msg 类型
   * [JointStateArray](./ros2/joint_state_array.md)
   * [JointCommandArray](./ros2/joint_command_array.md)
-  * [TouchStateArray](./ros2/touch_sensor_state_array.md)
+  * [TouchSensorStateArray](./ros2/touch_sensor_state_array.md)
   * [Imu](./ros2/imu.md)
 
 
