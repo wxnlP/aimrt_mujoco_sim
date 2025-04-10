@@ -43,5 +43,5 @@ EOF
 # send json data to server
 curl -i \
   -H 'content-type:application/json' \
-  -X POST 'http://127.0.0.1:50080/channel/%2Fexamples_hardware%2Fjoint%2Fjoint_command/ros2%3Asensor_ros2%2Fmsg%2FJointCommand' \
+  -X POST 'http://127.0.0.1:50080/channel/%2Fexamples_hardware%2Fjoint%2Fjoint_command/ros2%3Aaimrt_msgs%2Fmsg%2FJointCommandArray' \
   -d "$JSON_DATA"
