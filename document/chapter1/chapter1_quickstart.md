@@ -12,7 +12,7 @@ Aimrt_Mujoco_Sim 旨在为机器人开发者提供一个快速上手的仿真平
 
     - cmake 3.24+
     - gcc 11.4+
-    - clang 15.0.7+
+    - clang 15.0+
     - 操作系统： 推荐 Ubuntu 22.04
 
 - 依赖 （在构建过程均通过 cmake 自动下载）
@@ -31,9 +31,8 @@ Aimrt_Mujoco_Sim 旨在为机器人开发者提供一个快速上手的仿真平
 ./build.sh \
   -DAIMRT_MUJOCO_SIM_INSTALL=ON \           # 是否生成安装包
   -DCMAKE_INSTALL_PREFIX=./build/install \  # 安装路径（默认：当前目录的 build/install）
-  -DAIMRT_MUJOCO_SIM_BUILD_WITH_ROS2=ON \   # 是否启用 ROS2 支持
-  -DAIMRT_MUJOCO_SIM_BUILD_TESTS=OFF \      # 是否编译测试用例
-  -DAIMRT_MUJOCO_SIM_BUILD_EXAMPLES=ON      # 是否编译示例程序
+  -DAIMRT_MUJOCO_SIM_BUILD_WITH_ROS2=ON \   # 是否启用 ROS2 支持, 默认为 OFF
+  -DAIMRT_MUJOCO_SIM_BUILD_EXAMPLES=ON      # 是否编译示例程序, 默认为 OFF
 ```
 
 ### 1.2.3 运行 (run)
@@ -43,6 +42,40 @@ Aimrt_Mujoco_Sim 旨在为机器人开发者提供一个快速上手的仿真平
 ./start_examples_inverted_pendulum_with_pid_control.sh
 ```
 当弹出 mujoco 可视化界面并看到倒立摆模型运动时，说明运行成功。
+
+### 1.2.4 引用
+如果需要在自己的项目中以第三方的形式引用 aimrt_mujoco_sim，可以参考以下方式：推荐基于FetchContent 的引用方式进行源码引用，在 CMakeLists.txt 中添加以下内容：
+
+```cmake
+include(FetchContent)
+
+message(STATUS "get aimrt mujoco sim ...")
+
+if(aimrt_mujoco_sim_LOCAL_SOURCE)
+  FetchContent_Declare(aimrt_mujoco_sim SOURCE_DIR ${aimrt_mujoco_sim_LOCAL_SOURCE} OVERRIDE_FIND_PACKAGE)
+else()
+  FetchContent_Declare(
+    aimrt_mujoco_sim 
+    GIT_REPOSITORY "https://github.com/AimRT/aimrt_mujoco_sim.git" 
+    GIT_TAG "main"
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    OVERRIDE_FIND_PACKAGE)
+endif()
+
+function(get_aimrt_mujoco_sim)
+  FetchContent_GetProperties(aimrt_mujoco_sim)
+  if(NOT aimrt_mujoco_sim_POPULATED)
+
+    set(AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2 ON)
+
+
+    FetchContent_MakeAvailable(aimrt_mujoco_sim)
+  endif()
+endfunction()
+
+get_aimrt_mujoco_sim()
+```
+
 
 ## 1.3 项目结构
 ``` shell
