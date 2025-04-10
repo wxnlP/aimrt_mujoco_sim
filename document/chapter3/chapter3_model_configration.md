@@ -2,7 +2,7 @@
 AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整个机器人结构（xml 配置文件）以及通信行为（yaml 配置文件）， 即可启动机器人仿真模块， 实现和其他模块的通信，以及机器人仿真。本章将详细介绍 AimRT_Mujoco_Sim 的模型配置和通信配置。
 
 ## 3.1 模型配置（.xml）
-模型配置（.xml）：描述机器人模型的结构、关节、传感器、驱动器等信息。在项目根目录下的`./src/examples/XXX/install/linux/bin/cfg/model`文件夹下。
+模型配置（.xml）：描述机器人模型的结构、关节、传感器、驱动器等信息。
 主要用于：
   - 定义机器人的物理结构（连杆、关节）
   - 配置驱动器参数（电机、驱动器）
@@ -12,7 +12,7 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
 具体使用请参考 [mujoco 官方文档](https://mujoco.readthedocs.io/en/stable/XMLreference.html)
 
 ## 3.2 通信配置（.yaml）
-通信配置（.yaml）：配置机器人仿真模块和其他模块的通信。在项目的`./src/examples/inverted_pendulum/install/linux/bin/cfg`文件夹下。
+通信配置（.yaml）：配置机器人仿真模块和其他模块的通信。
 本项目使用 AimRT 作为中间件进行通信。其主要用于：
   - 用来订阅其他控制节点的控制指令，并将控制指令转化为 Mujoco 仿真场景中的动作指令
   - 用来发布 Mujoco 仿真场景中的状态信息，包括机器人当前的位置、姿态、速度等
