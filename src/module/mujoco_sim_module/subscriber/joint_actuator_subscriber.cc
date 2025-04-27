@@ -97,9 +97,17 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
   if (stop_flag_) [[unlikely]]
     return;
 
+  size_t joint_num_real = commands->joints_size();
+
+  if (joint_num_ != joint_num_real) [[unlikely]] {
+    AIMRT_WARN("The number of joints (topci: {}, expected: {}, actual: {}) in the options and the received message are different.",
+               subscriber_.GetTopic(), joint_num_, joint_num_real);
+    joint_num_real = std::min(joint_num_, joint_num_real);
+  }
+
   auto* new_command_array = new double[joint_num_];
 
-  for (size_t ii = 0; ii < joint_num_; ++ii) {
+  for (size_t ii = 0; ii < joint_num_real; ++ii) {
     const auto& joint_options = options_.joints[ii];
     const auto& command = commands->joints()[ii];
 
@@ -147,9 +155,17 @@ void JointActuatorRos2Subscriber::EventHandle(const std::shared_ptr<const aimrt_
   if (stop_flag_) [[unlikely]]
     return;
 
+  size_t joint_num_real = commands->joints.size();
+
+  if (joint_num_ != joint_num_real) [[unlikely]] {
+    AIMRT_WARN("The number of joints (topci: {}, expected: {}, actual: {}) in the options and the received message are different.",
+               subscriber_.GetTopic(), joint_num_, joint_num_real);
+    joint_num_real = std::min(joint_num_, joint_num_real);
+  }
+
   auto* new_command_array = new double[joint_num_];
 
-  for (size_t ii = 0; ii < joint_num_; ++ii) {
+  for (size_t ii = 0; ii < joint_num_real; ++ii) {
     const auto& joint_options = options_.joints[ii];
     const auto command = commands->joints[ii];
 
