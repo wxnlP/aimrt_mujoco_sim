@@ -102,6 +102,7 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
   if (joint_num_ != joint_num_real) [[unlikely]] {
     AIMRT_WARN("The number of joints (topci: {}, expected: {}, actual: {}) in the options and the received message are different.",
                subscriber_.GetTopic(), joint_num_, joint_num_real);
+    joint_num_real = std::min(joint_num_, joint_num_real);
   }
 
   auto* new_command_array = new double[joint_num_];
@@ -159,6 +160,7 @@ void JointActuatorRos2Subscriber::EventHandle(const std::shared_ptr<const aimrt_
   if (joint_num_ != joint_num_real) [[unlikely]] {
     AIMRT_WARN("The number of joints (topci: {}, expected: {}, actual: {}) in the options and the received message are different.",
                subscriber_.GetTopic(), joint_num_, joint_num_real);
+    joint_num_real = std::min(joint_num_, joint_num_real);
   }
 
   auto* new_command_array = new double[joint_num_];
