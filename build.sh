@@ -15,6 +15,7 @@ cmake -B build \
     -DAIMRT_MUJOCO_SIM_BUILD_WITH_ROS2=ON \
     -DAIMRT_MUJOCO_SIM_BUILD_TESTS=OFF \
     -DAIMRT_MUJOCO_SIM_BUILD_EXAMPLES=ON \
+    -DAIMRT_MUJOCO_SIM_BUILD_ACTUATOR=ON \
     $@
 
 cmake --build build --config Release --target install --parallel $(nproc)
