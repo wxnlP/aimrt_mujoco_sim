@@ -3,7 +3,9 @@
 
 set_namespace()
 
+if(AIMRT_MUJOCO_SIM_BUILD_ACTUATOR)
 add_subdirectory(actuator)
+endif()
 
 if(AIMRT_MUJOCO_SIM_BUILD_EXAMPLES)
   add_subdirectory(examples/inverted_pendulum)
