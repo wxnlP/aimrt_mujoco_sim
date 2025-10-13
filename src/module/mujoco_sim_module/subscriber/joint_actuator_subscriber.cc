@@ -113,8 +113,8 @@ void JointActuatorSubscriber::EventHandle(const std::shared_ptr<const aimrt::pro
 
     auto itr = std::ranges::find(joint_names_vec_, command.name());
     if (itr == joint_names_vec_.end()) [[unlikely]] {
-      AIMRT_WARN("Invalid msg for topic '{}', msg: {}",
-                 subscriber_.GetTopic(), aimrt::Pb2CompactJson(*commands));
+      AIMRT_WARN("Invalid msg for topic '{}', msg: {}, maybe the joint name : {} is not matched.",
+                 subscriber_.GetTopic(), aimrt::Pb2CompactJson(*commands), command.name());
 
       delete[] new_command_array;
       return;
