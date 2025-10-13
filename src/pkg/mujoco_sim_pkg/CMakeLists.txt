@@ -30,9 +30,7 @@ target_link_libraries(
 
 # Set installation of target
 if(AIMRT_MUJOCO_SIM_INSTALL)
-  set_target_properties(${CUR_TARGET_NAME} PROPERTIES 
-    EXPORT_NAME ${CUR_TARGET_ALIAS_NAME}
-    INSTALL_RPATH "$ORIGIN")
+  set_target_properties(${CUR_TARGET_NAME} PROPERTIES EXPORT_NAME ${CUR_TARGET_ALIAS_NAME} INSTALL_RPATH "$ORIGIN")
   install(
     TARGETS ${CUR_TARGET_NAME}
     EXPORT ${INSTALL_CONFIG_NAME}
