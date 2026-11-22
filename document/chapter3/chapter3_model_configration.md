@@ -36,6 +36,14 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
 | publisher_options[i].executor  | string | 必选     | ""     | 发布者所绑定的执行器类型                                        |
 | publisher_options[i].type      | string | 必选     | ""     | 发布的状态信息类型                                              |
 | publisher_options[i].options   | map    | 可选     | -      | 发布状态信息的配置项  ，具体请参考[传感器配置](#323-传感器配置) |
+| camera_options                 | array  | 可选     | []     | 相机选项，用于发布彩色图、深度图和相机内参                     |
+| camera_options[i].type         | string | 必选     | ""     | 相机的类型                                                     |
+| camera_options[i].frequency    | number | 必选     | 10     | 相机的发布频率(Hz)                                             |
+| camera_options[i].executor     | string | 必选     | ""     | 相机所绑定的执行器类型                                         |
+| camera_options[i].color_topic  | string | 必选     | ""     | 彩色图的话题名称                                               |
+| camera_options[i].depth_topic  | string | 必选     | ""     | 深度图的话题名称                                               |
+| camera_options[i].info_topic   | string | 必选     | ""     | 相机内参的话题名称                                             |
+| camera_options[i].options      | map    | 可选     | -      | 相机的配置项，具体请参考[相机配置](#324-相机配置)              |
 
 使用注意点如下：
 - subscriber_options 为数组类型， 每一个元素代表会开启一个订阅者用于订阅控制指令。
@@ -52,6 +60,10 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
   - [`imu_sensor_ros2`](#imu-类传感器选项imu_sensor--imu_sensor_ros2)
   - [`touch_sensor`](#touch-类传感器选项touch_sensor--touch_sensor_ros2)
   - [`touch_sensor_ros2`](#touch-类传感器选项touch_sensor--touch_sensor_ros2)
+
+- camera_options[i].type 为相机的类型，目前可选的有：
+  - [`camera_sensor`](#相机选项camera_sensor--camera_sensor_ros2)
+  - [`camera_sensor_ros2`](#相机选项camera_sensor--camera_sensor_ros2)
 
 ### 3.2.2 驱动器配置
 #### joint 类驱动器选项（joint_actuator & joint_actuator_ros2）
@@ -202,4 +214,38 @@ AimRT_Mujoco_Sim 的设计初衷就是让用户仅通过配置文件来描述整
             - bind_site: touch_sensor_site_2_bottom
               bind_touch_sensor: touch_sensor_2_bottom
 
+```
+### 3.2.4 相机配置
+#### 相机选项（camera_sensor & camera_sensor_ros2）
+
+| 节点        | 类型   | 是否可选 | 默认值 | 作用                               |
+| ----------- | ------ | -------- | ------ | ---------------------------------- |
+| bind_camera | string | 必选     | ""     | 相机在 xml 中绑定的相机名称        |
+| width       | number | 可选     | 640    | 输出图像的宽度（像素）             |
+| height      | number | 可选     | 480    | 输出图像的高度（像素）             |
+
+使用注意点如下：
+- camera_options 是一个 array 类型，每一个元素代表开启一路相机，会同时向彩色图、深度图、相机内参三个话题发布数据
+- 相机通过可视化窗口的离屏渲染采集图像，需要编译时开启 `-DAIMRT_MUJOCO_SIM_BUILD_WITH_CAMERA=ON`，且运行时有可用的显示环境
+- bind_camera 必须与 xml 文件中 `<camera>` 的 name 字段一致
+- 彩色图固定为 `rgb8`；深度图固定为 `16UC1`，单位为毫米，超过 65.535 m 会截断为 65535
+- 相机内参由 xml 中相机的 fovy 计算，无镜头畸变（`plumb_bob`，畸变系数全为 0），发布消息的 frame_id 与 bind_camera 一致
+
+```xml
+  <!-- xml 示例： -->
+  <camera name="camera" pos="0 -2 0.9" xyaxes="1 0 0 0 0.3420201 0.9396926" fovy="45"/>
+```
+```yaml
+  # yaml 示例：
+  camera_options:
+    - type: camera_sensor # 或者 camera_sensor_ros2
+      frequency: 10
+      executor: work_thread_pool
+      color_topic: /examples_hardware/camera/color/image_raw
+      depth_topic: /examples_hardware/camera/depth/image_raw
+      info_topic: /examples_hardware/camera/depth/camera_info
+      options:
+        bind_camera: camera
+        width: 640
+        height: 480
 ```

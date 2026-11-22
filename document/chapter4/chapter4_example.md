@@ -48,6 +48,32 @@
 # 使用 ros2_msg 协议
 ./start_examples_hardware_touch_ros2.sh
 ```
+### 4.1.4 camera 传感器
+![alt text](./pic/camera.png)
+该示例演示了如何使用相机传感器获取彩色图、深度图和相机内参。编译时需要开启 `-DAIMRT_MUJOCO_SIM_BUILD_WITH_CAMERA=ON`。用户可通过在 build 目录下输入以下指令执行：
+```shell
+# 使用 protobuf 协议
+./start_examples_hardware_camera_pb.sh
+```
+```shell
+# 使用 ros2_msg 协议
+./start_examples_hardware_camera_ros2.sh
+```
+相机话题如下：
+- `/examples_hardware/camera/color/image_raw`：`rgb8` 彩色图
+- `/examples_hardware/camera/depth/image_raw`：`16UC1` 深度图，单位毫米
+- `/examples_hardware/camera/depth/camera_info`：相机内参
+
+ROS2 示例已启用 `ros2` 后端，可直接在 RViz2 中查看图像：启动示例后打开 RViz2，添加 `Image` display，选择 `/examples_hardware/camera/color/image_raw` 即可；深度图为 `16UC1`（毫米），可配合 `/examples_hardware/camera/depth/camera_info` 使用。
+
+RViz2 的 Fixed Frame 需要一个存在的 TF 帧。另开一个终端执行下面的脚本发布静态 TF，然后把 Fixed Frame 设为 `map`：
+
+```shell
+./start_examples_hardware_camera_tf.sh
+```
+
+使用 DepthCloud 时，CameraInfo Topic 选 `/examples_hardware/camera/depth/camera_info`。
+
 ## 4.2 倒立摆(example/inverted pendulum)
 
 ### 4.2.1 模型介绍

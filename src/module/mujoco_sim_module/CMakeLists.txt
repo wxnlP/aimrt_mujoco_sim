@@ -19,9 +19,22 @@ file(GLOB_RECURSE test_files ${CMAKE_CURRENT_SOURCE_DIR}/*_test.cc)
 file(GLOB_RECURSE with_ros2_files ${CMAKE_CURRENT_SOURCE_DIR}/*ros2*.cc ${CMAKE_CURRENT_SOURCE_DIR}/*ros2*.h)
 list(REMOVE_ITEM src ${test_files})
 
+if(NOT AIMRT_MUJOCO_SIM_BUILD_WITH_CAMERA)
+  file(GLOB_RECURSE camera_files ${CMAKE_CURRENT_SOURCE_DIR}/camera/*)
+  list(REMOVE_ITEM src ${camera_files})
+  list(REMOVE_ITEM head_files ${camera_files})
+endif()
+
 # Add target
 add_library(${CUR_TARGET_NAME} STATIC)
 add_library(${CUR_TARGET_ALIAS_NAME} ALIAS ${CUR_TARGET_NAME})
+
+if(AIMRT_MUJOCO_SIM_BUILD_WITH_CAMERA)
+  target_compile_definitions(${CUR_TARGET_NAME} PUBLIC AIMRT_MUJOCO_SIM_BUILD_WITH_CAMERA)
+  set(CAMERA_DEPS aimrt_mujoco_sim::protocols::sensor_pb_gencode)
+else()
+  set(CAMERA_DEPS "")
+endif()
 
 # deal with ROS2 related files and dependencies
 if(AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2)
@@ -62,6 +75,7 @@ target_link_libraries(
          mujoco::libsimulate
          mujoco::mujoco
          glfw
+         ${CAMERA_DEPS}
          ${ADDITIONAL_ROS2_DEPS})
 
 # Set test of target

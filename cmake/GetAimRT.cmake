@@ -36,6 +36,10 @@ function(get_aimrt)
       set(AIMRT_BUILD_WITH_ROS2 OFF)
     endif()
 
+    if(AIMRT_MUJOCO_SIM_BUILD_EXAMPLES)
+      set(AIMRT_BUILD_ROS2_PLUGIN ON)
+    endif()
+
     set(AIMRT_BUILD_NET_PLUGIN ON)
     set(AIMRT_BUILD_TIME_MANIPULATOR_PLUGIN ON)
     set(AIMRT_BUILD_ECHO_PLUGIN ON)

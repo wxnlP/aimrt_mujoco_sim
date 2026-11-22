@@ -13,6 +13,11 @@
 #include "mujoco_sim_module/publisher/touch_sensor_publisher.h"
 #include "mujoco_sim_module/subscriber/joint_actuator_subscriber.h"
 
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_CAMERA
+  #include "mujoco_sim_module/camera/camera_sensor_publisher.h"
+  #include "mujoco_sim_module/camera/capture_adapter.h"
+#endif
+
 namespace YAML {
 template <>
 struct convert<aimrt_mujoco_sim::mujoco_sim_module::MujocoSimModule::Options> {
@@ -43,6 +48,19 @@ struct convert<aimrt_mujoco_sim::mujoco_sim_module::MujocoSimModule::Options> {
       publisher_option_node["type"] = publisher_option.type;
       publisher_option_node["options"] = publisher_option.options;
       node["publisher_options"].push_back(publisher_option_node);
+    }
+
+    node["camera_options"] = YAML::Node();
+    for (const auto& camera_option : rhs.camera_options) {
+      Node camera_option_node;
+      camera_option_node["frequency"] = camera_option.frequency;
+      camera_option_node["executor"] = camera_option.executor;
+      camera_option_node["type"] = camera_option.type;
+      camera_option_node["color_topic"] = camera_option.color_topic;
+      camera_option_node["depth_topic"] = camera_option.depth_topic;
+      camera_option_node["info_topic"] = camera_option.info_topic;
+      camera_option_node["options"] = camera_option.options;
+      node["camera_options"].push_back(camera_option_node);
     }
 
     return node;
@@ -84,6 +102,26 @@ struct convert<aimrt_mujoco_sim::mujoco_sim_module::MujocoSimModule::Options> {
           publisher_options.options = YAML::Node(YAML::NodeType::Null);
 
         rhs.publisher_options.emplace_back(std::move(publisher_options));
+      }
+    }
+
+    if (node["camera_options"] && node["camera_options"].IsSequence()) {
+      for (const auto& camera_option_node : node["camera_options"]) {
+        auto camera_options = Options::CameraOption{
+            .frequency = camera_option_node["frequency"].as<uint32_t>(),
+            .executor = camera_option_node["executor"].as<std::string>(),
+            .type = camera_option_node["type"].as<std::string>(),
+            .color_topic = camera_option_node["color_topic"].as<std::string>(),
+            .depth_topic = camera_option_node["depth_topic"].as<std::string>(),
+            .info_topic = camera_option_node["info_topic"].as<std::string>()};
+
+        if (camera_option_node["options"]) {
+          camera_options.options = camera_option_node["options"];
+        } else {
+          camera_options.options = YAML::Node(YAML::NodeType::Null);
+        }
+
+        rhs.camera_options.emplace_back(std::move(camera_options));
       }
     }
 
@@ -164,6 +202,37 @@ bool MujocoSimModule::Initialize(aimrt::CoreRef core) {
     publisher_map_.emplace(item.topic, std::move(ptr));
   }
 
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_CAMERA
+  // register camera gen func
+  RegisterCameraGenFunc();
+
+  // create camera
+  for (auto& item : options_.camera_options) {
+    auto finditr = camera_gen_func_map_.find(item.type);
+    AIMRT_CHECK_ERROR_THROW(finditr != camera_gen_func_map_.end(),
+                            "Invalid type '{}' for camera.", item.type);
+
+    auto executor = core_.GetExecutorManager().GetExecutor(item.executor);
+    AIMRT_CHECK_ERROR_THROW(executor, "Can not get executor '{}' for camera.", item.executor);
+
+    auto ptr = finditr->second();
+
+    ptr->SetMj(m_, d_);
+    ptr->SetPublisherHandles(
+        core_.GetChannelHandle().GetPublisher(item.color_topic),
+        core_.GetChannelHandle().GetPublisher(item.depth_topic),
+        core_.GetChannelHandle().GetPublisher(item.info_topic));
+    ptr->SetExecutor(executor);
+    ptr->SetFreq(item.frequency);
+
+    ptr->Initialize(item.options);
+
+    camera_map_.emplace(item.color_topic, std::move(ptr));
+  }
+#else
+  AIMRT_CHECK_ERROR_THROW(options_.camera_options.empty(), "Camera support is not built.");
+#endif
+
   AIMRT_INFO("Init succeeded.");
 
   return true;
@@ -183,6 +252,12 @@ bool MujocoSimModule::Start() {
     itr.second->Start();
   }
 
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_CAMERA
+  for (auto& itr : camera_map_) {
+    itr.second->Start();
+  }
+#endif
+
   return true;
 }
 
@@ -201,6 +276,13 @@ void MujocoSimModule::Shutdown() {
     sim_->exitrequest.store(1);
 
   aimrt::co::SyncWait(scope_.complete());
+
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_CAMERA
+  for (auto& itr : camera_map_) {
+    itr.second->Shutdown();
+  }
+  camera_map_.clear();
+#endif
 
   if (d_) mj_deleteData(d_);
   if (m_) mj_deleteModel(m_);
@@ -243,6 +325,23 @@ void MujocoSimModule::RegisterPublisherGenFunc() {
 #endif
 }
 
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_CAMERA
+void MujocoSimModule::RegisterCameraGenFunc() {
+  auto generator = [this]<typename T>(std::string_view name) {
+    camera_gen_func_map_.emplace(
+        name,
+        []() -> std::unique_ptr<camera::CameraSensorPublisherBase> {
+          return std::make_unique<T>();
+        });
+  };
+
+  generator.template operator()<camera::CameraSensorPublisher>("camera_sensor");
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_ROS2
+  generator.template operator()<camera::CameraSensorRos2Publisher>("camera_sensor_ros2");
+#endif
+}
+#endif
+
 aimrt::co::Task<void> MujocoSimModule::GuiLoop() {
   auto gui_scheduler = aimrt::co::AimRTScheduler(gui_executor_);
   co_await aimrt::co::Schedule(gui_scheduler);
@@ -256,9 +355,27 @@ aimrt::co::Task<void> MujocoSimModule::GuiLoop() {
   mjvPerturb pert;
   mjv_defaultPerturb(&pert);
 
-  sim_ = std::make_shared<mujoco::Simulate>(
-      std::make_unique<mujoco::GlfwAdapter>(),
-      &cam, &opt, &pert, false);
+  std::unique_ptr<mujoco::PlatformUIAdapter> adapter;
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_CAMERA
+  if (!camera_map_.empty()) {
+    adapter = std::make_unique<camera::CaptureAdapter>([this](mjrContext& con) {
+      for (auto& itr : camera_map_) {
+        itr.second->OnRenderFrame(con);
+      }
+    });
+  }
+#endif
+  if (!adapter) {
+    adapter = std::make_unique<mujoco::GlfwAdapter>();
+  }
+
+  sim_ = std::make_shared<mujoco::Simulate>(std::move(adapter), &cam, &opt, &pert, false);
+
+#ifdef AIMRT_MUJOCO_SIM_BUILD_WITH_CAMERA
+  for (auto& itr : camera_map_) {
+    itr.second->SetSim(sim_.get());
+  }
+#endif
 
   sim_->RenderLoop();
 

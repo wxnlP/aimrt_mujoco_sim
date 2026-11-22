@@ -8,11 +8,15 @@
   * [JointCommandArray](./protobuf/joint_command_array.md)
   * [TouchSensorStateArray](./protobuf/touch_sensor_state_array.md)
   * [ImuState](./protobuf/imu_state.md)
+  * [Image](./protobuf/image.md)
+  * [CameraInfo](./protobuf/camera_info.md)
 * ros2 msg 类型
   * [JointStateArray](./ros2/joint_state_array.md)
   * [JointCommandArray](./ros2/joint_command_array.md)
   * [TouchSensorStateArray](./ros2/touch_sensor_state_array.md)
   * [Imu](./ros2/imu.md)
+  * [Image](./ros2/image.md)
+  * [CameraInfo](./ros2/camera_info.md)
 
 [返回目录](../index.md)
 

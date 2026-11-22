@@ -1,0 +1,81 @@
+// Copyright (c) 2026, wxnlP
+// All rights reserved.
+
+syntax = "proto3";
+
+import "header.proto";
+
+package aimrt_mujoco_sim.protocols.sensor;
+
+/**
+ * @brief Represents an image.
+ */
+message Image {
+  // Common header with timestamp and metadata.
+  aimrt.protocols.common.Header header = 1;
+
+  // Image height in pixels.
+  uint32 height = 2;
+
+  // Image width in pixels.
+  uint32 width = 3;
+
+  // Image encoding, such as "rgb8" or "32FC1".
+  string encoding = 4;
+
+  // Whether the image data is big-endian.
+  uint32 is_bigendian = 5;
+
+  // Number of bytes per image row.
+  uint32 step = 6;
+
+  // Image data.
+  bytes data = 7;
+}
+
+/**
+ * @brief Represents a region of interest.
+ */
+message RegionOfInterest {
+  uint32 x_offset = 1;
+  uint32 y_offset = 2;
+  uint32 height = 3;
+  uint32 width = 4;
+  bool do_rectify = 5;
+}
+
+/**
+ * @brief Represents camera calibration information.
+ */
+message CameraInfo {
+  // Common header with timestamp and metadata.
+  aimrt.protocols.common.Header header = 1;
+
+  // Image height in pixels.
+  uint32 height = 2;
+
+  // Image width in pixels.
+  uint32 width = 3;
+
+  // Distortion model.
+  string distortion_model = 4;
+
+  // Distortion coefficients.
+  repeated double d = 5;
+
+  // Intrinsic camera matrix (3x3, row-major).
+  repeated double k = 6;
+
+  // Rectification matrix (3x3, row-major).
+  repeated double r = 7;
+
+  // Projection matrix (3x4, row-major).
+  repeated double p = 8;
+
+  // Binning factors.
+  uint32 binning_x = 9;
+  uint32 binning_y = 10;
+
+  // Region of interest.
+  RegionOfInterest roi = 11;
+}
