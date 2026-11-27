@@ -4,6 +4,10 @@
 #pragma once
 
 #include <memory>
+#include <string>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 #include "aimrt_module_cpp_interface/co/async_scope.h"
 #include "aimrt_module_cpp_interface/co/task.h"
@@ -45,6 +49,14 @@ class MujocoSimModule : public aimrt::ModuleBase {
     };
     std::vector<PublisherOption> publisher_options;
 
+    // --- 夹住即脱落（本地临时补丁）---
+    bool auto_detach = false;                                   // 总开关
+    std::string auto_detach_eq_prefix = "attachment_";          // weld 名约定
+    std::string auto_detach_gripper_joint = "gripper_right_joint";
+    std::string auto_detach_gripper_body_prefix = "gripper";    // 指部 body 名约定
+    double auto_detach_close_thresh = 0.043;                    // qpos 小于此值视为已夹紧（0=夹紧 0.045=全开）
+    int auto_detach_hold_steps = 100;                           // 接触持续多少步后断开（先让夹持力建起来）
+
     struct CameraOption {
       uint32_t frequency;
       std::string executor;
@@ -81,6 +93,9 @@ class MujocoSimModule : public aimrt::ModuleBase {
   aimrt::co::Task<void> GuiLoop();
   aimrt::co::Task<void> SimLoop();
 
+  // 夹住即脱落：命中一对（果实<->夹爪）接触且夹爪已闭合，则关掉该果实的 weld
+  void ApplyAutoDetach();
+
  private:
   aimrt::CoreRef core_;
 
@@ -116,6 +131,12 @@ class MujocoSimModule : public aimrt::ModuleBase {
   // key:topic
   std::unordered_map<std::string, std::unique_ptr<subscriber::SubscriberBase>> subscriber_map_;
   std::unordered_map<std::string, std::unique_ptr<publisher::PublisherBase>> publisher_map_;
+
+  // --- 夹住即脱落（本地临时补丁）---
+  std::vector<std::pair<int, int>> detach_welds_;   // {eq_id, fruit_body_id}
+  std::unordered_set<int> gripper_bodies_;          // 指部 body id
+  std::vector<int> detach_hits_;                    // 每个 weld 的连续接触计数
+  int detach_grip_joint_ = -1;                      // 夹爪关节 id
 };
 
 }  // namespace aimrt_mujoco_sim::mujoco_sim_module

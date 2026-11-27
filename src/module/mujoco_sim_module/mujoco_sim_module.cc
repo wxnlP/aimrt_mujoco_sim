@@ -27,6 +27,12 @@ struct convert<aimrt_mujoco_sim::mujoco_sim_module::MujocoSimModule::Options> {
     Node node;
 
     node["simulation_model_path"] = rhs.simulation_model_path;
+    node["auto_detach"] = rhs.auto_detach;
+    node["auto_detach_eq_prefix"] = rhs.auto_detach_eq_prefix;
+    node["auto_detach_gripper_joint"] = rhs.auto_detach_gripper_joint;
+    node["auto_detach_gripper_body_prefix"] = rhs.auto_detach_gripper_body_prefix;
+    node["auto_detach_close_thresh"] = rhs.auto_detach_close_thresh;
+    node["auto_detach_hold_steps"] = rhs.auto_detach_hold_steps;
     node["sim_executor"] = rhs.sim_executor;
     node["gui_executor"] = rhs.gui_executor;
 
@@ -70,6 +76,12 @@ struct convert<aimrt_mujoco_sim::mujoco_sim_module::MujocoSimModule::Options> {
     if (!node.IsMap()) return false;
 
     rhs.simulation_model_path = node["simulation_model_path"].as<std::string>();
+    if (node["auto_detach"]) rhs.auto_detach = node["auto_detach"].as<bool>();
+    if (node["auto_detach_eq_prefix"]) rhs.auto_detach_eq_prefix = node["auto_detach_eq_prefix"].as<std::string>();
+    if (node["auto_detach_gripper_joint"]) rhs.auto_detach_gripper_joint = node["auto_detach_gripper_joint"].as<std::string>();
+    if (node["auto_detach_gripper_body_prefix"]) rhs.auto_detach_gripper_body_prefix = node["auto_detach_gripper_body_prefix"].as<std::string>();
+    if (node["auto_detach_close_thresh"]) rhs.auto_detach_close_thresh = node["auto_detach_close_thresh"].as<double>();
+    if (node["auto_detach_hold_steps"]) rhs.auto_detach_hold_steps = node["auto_detach_hold_steps"].as<int>();
     rhs.sim_executor = node["sim_executor"].as<std::string>();
     rhs.gui_executor = node["gui_executor"].as<std::string>();
 
@@ -157,6 +169,26 @@ bool MujocoSimModule::Initialize(aimrt::CoreRef core) {
 
   d_ = mj_makeData(m_);
   AIMRT_CHECK_ERROR_THROW(d_ != nullptr, "Make data failed.");
+
+  // --- 夹住即脱落：建立索引（weld 名前缀 -> {eq_id, 果实 body}；夹爪 body 集合）---
+  if (options_.auto_detach) {
+    detach_grip_joint_ = mj_name2id(m_, mjOBJ_JOINT, options_.auto_detach_gripper_joint.c_str());
+    for (int b = 1; b < m_->nbody; ++b) {
+      const char* bn = mj_id2name(m_, mjOBJ_BODY, b);
+      if (bn && std::string(bn).rfind(options_.auto_detach_gripper_body_prefix, 0) == 0)
+        gripper_bodies_.insert(b);
+    }
+    const std::string& pfx = options_.auto_detach_eq_prefix;
+    for (int e = 0; e < m_->neq; ++e) {
+      const char* en = mj_id2name(m_, mjOBJ_EQUALITY, e);
+      if (!en || std::string(en).rfind(pfx, 0) != 0) continue;
+      if (m_->eq_type[e] != mjEQ_WELD) continue;
+      detach_welds_.emplace_back(e, m_->eq_obj2id[e]);
+      detach_hits_.push_back(0);
+    }
+    AIMRT_INFO("auto detach enabled: {} welds, {} gripper bodies, gripper joint id {}",
+               detach_welds_.size(), gripper_bodies_.size(), detach_grip_joint_);
+  }
 
   // register subscriber gen func
   RegisterSubscriberGenFunc();
@@ -415,6 +447,9 @@ aimrt::co::Task<void> MujocoSimModule::SimLoop() {
         itr.second->PublishSensorData();
       }
 
+      // 夹住即脱落（本地临时补丁）
+      if (options_.auto_detach) ApplyAutoDetach();
+
       // step
       if (sim_->run) {
         mj_step(m_, d_);
@@ -428,6 +463,34 @@ aimrt::co::Task<void> MujocoSimModule::SimLoop() {
   AIMRT_INFO("SimLoop exit.");
 
   co_return;
+}
+
+void MujocoSimModule::ApplyAutoDetach() {
+  if (detach_grip_joint_ < 0 || detach_welds_.empty()) return;
+  // 夹爪是否已闭合到阈值（0.0 = 夹紧，越大越开）
+  double grip = d_->qpos[m_->jnt_qposadr[detach_grip_joint_]];
+  if (grip > options_.auto_detach_close_thresh) return;
+
+  for (size_t i = 0; i < detach_welds_.size(); ++i) {
+    auto& [eq, fbody] = detach_welds_[i];
+    if (d_->eq_active[eq] == 0) continue;
+    bool hit = false;
+    for (int c = 0; c < d_->ncon && !hit; ++c) {
+      const mjContact& con = d_->contact[c];
+      int b0 = m_->geom_bodyid[con.geom[0]];
+      int b1 = m_->geom_bodyid[con.geom[1]];
+      hit = (b0 == fbody && gripper_bodies_.count(b1)) ||
+            (b1 == fbody && gripper_bodies_.count(b0));
+    }
+    if (!hit) { detach_hits_[i] = 0; continue; }
+    if (++detach_hits_[i] < options_.auto_detach_hold_steps) continue;
+    d_->eq_active[eq] = 0;
+    detach_hits_[i] = 0;
+    const char* en = mj_id2name(m_, mjOBJ_EQUALITY, eq);
+    const char* fn = mj_id2name(m_, mjOBJ_BODY, fbody);
+    AIMRT_INFO("auto detach: '{}' released (fruit body '{}', grip {:.4f})",
+               en ? en : "?", fn ? fn : "?", grip);
+  }
 }
 
 }  // namespace aimrt_mujoco_sim::mujoco_sim_module
